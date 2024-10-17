@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Debug Microcontroller",
+            "type": "cortex-debug",
+            "request": "launch",
+            "executable": "${workspaceFolder}/build/rtthread.elf",
+            "cwd": "${workspaceFolder}",
+            "svdFile": "./GD32F4xx.svd",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            // openocd 命令
+            "servertype": "openocd",
+            "configFiles": [
+                "./03cmsis-dap.cfg",
+            ]
+        }
+    ]
+}
