@@ -206,6 +206,9 @@ menu "On-chip Peripheral Drivers"
             config BSP_USING_HWTIMER4
                 bool "Enable TIMER4"
                 default n
+            config BSP_USING_HWTIMER6
+                bool "Enable TIMER6"
+                default n
         endif
 
     menuconfig BSP_USING_ONCHIP_RTC

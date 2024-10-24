@@ -187,7 +187,7 @@ static int mb_master_init(void)
     return RT_EOK;
 }
 
-INIT_APP_EXPORT(mb_master_init);
+// INIT_APP_EXPORT(mb_master_init);
 
 static void update_ups_data(uint16_t *buf)
 {

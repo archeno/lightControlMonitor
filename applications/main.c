@@ -18,8 +18,11 @@
 #include "database.h"
 #include "i2c_app.h"
 #include "drv_adc.h"
+#include "lms.h"
+#include "rs_485.h"
+#include "lmsuart.h"
 #define DBG_TAG "main.c"
-#define DBG_LVL  DBG_INFO
+#define DBG_LVL DBG_INFO
 #include "rtdbg.h"
 
 /* defined the LED1 pin: PA9 */
@@ -68,6 +71,8 @@ int main(void)
 	sys.mycan.para.sys_com_indicator = 0xff;
 	while (1)
 	{
+
+		// lms_uart_send_byte(0x88);
 		rt_thread_mdelay(1000);
 		if (sys.mycan.para.can0_comm_fail_flag && sys.mycan.para.can1_comm_fail_flag)
 		{
@@ -181,13 +186,91 @@ static int show_adc_info(void)
 	// LOG_I("Iload:\t%d.%02dA", g_ccr_data.ccr_info.i_load/100, g_ccr_data.ccr_info.i_load%100);
 	// LOG_I("Uscr:\t%d.%dV", g_ccr_data.ccr_info.v_scr/10, g_ccr_data.ccr_info.v_scr%10);
 	// LOG_I("PassAngle:\t%d¡ã", (rt_uint16_t)(g_ccr_data.ccr_info.angle));
-    // LOG_I("i_lvl:\t%d", g_ccr_data.ccr_info.intensity);
-    LOG_I("ADC_I_VAL:\t%d.%03dV",  (rt_uint32_t)(rms_adc_voltage[1][20]*1000)/1000, (rt_uint32_t)(rms_adc_voltage[1][20]*1000)%1000);
-    LOG_I("ADC_U_VAL: \t%d.%03dV",  (rt_uint32_t)(rms_adc_voltage[0][20]*1000)/1000,(rt_uint32_t)(rms_adc_voltage[0][20]*1000)%1000 );
-    LOG_I("I_VAL:\t%d.%02dA",  (rt_uint32_t)(rms_adc_cal_voltage_avg[1])/100, (rt_uint32_t)(rms_adc_cal_voltage_avg[1])%100);
-    LOG_I("U_VAL: \t%d.%dV",  (rt_uint32_t)(rms_adc_cal_voltage_avg[0])/10,(rt_uint32_t)(rms_adc_cal_voltage_avg[0])%10 );
-    LOG_I("In_a: \t%d  In_b: %c%d", (rt_uint32_t)(g_sys_param.In_a1*100), g_sys_param.In_b<0 ? '-':' ', (rt_int32_t)(fabs(g_sys_param.In_b)*100));
-    LOG_I("Un_a: \t%d  Un_b: %c%d", (rt_uint32_t)(g_sys_param.Un_a*10), g_sys_param.Un_b<0 ? '-':' ', (rt_int32_t)(fabs(g_sys_param.Un_b)*10));
+	// LOG_I("i_lvl:\t%d", g_ccr_data.ccr_info.intensity);
+	LOG_I("ADC_I_VAL:\t%d.%03dV", (rt_uint32_t)(rms_adc_voltage[1][20] * 1000) / 1000, (rt_uint32_t)(rms_adc_voltage[1][20] * 1000) % 1000);
+	LOG_I("ADC_U_VAL: \t%d.%03dV", (rt_uint32_t)(rms_adc_voltage[0][20] * 1000) / 1000, (rt_uint32_t)(rms_adc_voltage[0][20] * 1000) % 1000);
+	LOG_I("I_VAL:\t%d.%02dA", (rt_uint32_t)(rms_adc_cal_voltage_avg[1]) / 100, (rt_uint32_t)(rms_adc_cal_voltage_avg[1]) % 100);
+	LOG_I("U_VAL: \t%d.%dV", (rt_uint32_t)(rms_adc_cal_voltage_avg[0]) / 10, (rt_uint32_t)(rms_adc_cal_voltage_avg[0]) % 10);
+	LOG_I("In_a: \t%d  In_b: %c%d", (rt_uint32_t)(g_sys_param.In_a1 * 100), g_sys_param.In_b < 0 ? '-' : ' ', (rt_int32_t)(fabs(g_sys_param.In_b) * 100));
+	LOG_I("Un_a: \t%d  Un_b: %c%d", (rt_uint32_t)(g_sys_param.Un_a * 10), g_sys_param.Un_b < 0 ? '-' : ' ', (rt_int32_t)(fabs(g_sys_param.Un_b) * 10));
 	return 0;
 }
 MSH_CMD_EXPORT(show_adc_info, "show adc info");
+
+static int light_on(int argc, char *argv[])
+{
+	rt_int16_t groupId, segId;
+	if (argc < 3)
+	{
+		LOG_E("light_on [groupId] [segId]");
+		return 0;
+	}
+
+	groupId = my_atoi(argv[1]);
+	segId = my_atoi(argv[2]);
+	build_ctrl_cmd(groupId, segId, CloseLamp_Order);
+	// g_sys_param.In_a1 = In_a / 100.0f;
+	// g_sys_param.In_b = In_b / 100.0f;
+	// uint8_t seg_cmd_buf[2];
+	// uint8_t ctrl_buf[3];
+
+	// seg_cmd_buf[0] = segId;
+	// seg_cmd_buf[1] = CloseLamp_Order << 4;
+
+	// ctrl_buf[0] = GenSyncFrame(groupId, LONG_CMD);
+	// ctrl_buf[1] = segId;
+	// ctrl_buf[2] = crc4_itu(seg_cmd_buf, 2) | seg_cmd_buf[1];
+	// rs_485_send_data(RS_485_UART2, ctrl_buf, 3);
+	// write_sysdata_to_eeprom(EEPROM_WRITE_DATABASE_VALUE);
+	return 0;
+}
+MSH_CMD_EXPORT(light_on, "light ctrl on");
+static int light_off(int argc, char *argv[])
+{
+	rt_int16_t groupId, segId;
+	if (argc < 3)
+	{
+		LOG_E("light_off [groupId] [segId]");
+		return 0;
+	}
+
+	groupId = my_atoi(argv[1]);
+	segId = my_atoi(argv[2]);
+	build_ctrl_cmd(groupId, segId, OpenLamp_Order);
+
+	// g_sys_param.In_a1 = In_a / 100.0f;
+	// g_sys_param.In_b = In_b / 100.0f;
+	// uint8_t seg_cmd_buf[2];
+	// uint8_t ctrl_buf[3];
+
+	// seg_cmd_buf[0] = segId;
+	// seg_cmd_buf[1] = OpenLamp_Order<<4;
+
+	// ctrl_buf[0] = GenSyncFrame(groupId, LONG_CMD);
+	// ctrl_buf[1] = segId;
+	// ctrl_buf[2] = crc4_itu(seg_cmd_buf, 2)| seg_cmd_buf[1];
+	// rs_485_send_data(RS_485_UART2, ctrl_buf, 3);
+	// write_sysdata_to_eeprom(EEPROM_WRITE_DATABASE_VALUE);
+	return 0;
+}
+MSH_CMD_EXPORT(light_off, "light ctrl off");
+
+static int disp_lms_state(int argc, char *argv[])
+{
+	const char *tab_prefix[4] = {"1-8:\t", "9-16:\t", "17-24:\t", "25-32:\t"};
+	rt_kprintf("%s", tab_prefix[0]);
+	int line = 0;
+	for (int i = 0; i < TERMIANL_NUM; i++)
+	{
+
+		rt_kprintf("%X ", g_lms.terminalState[i]);
+		if (((i + 1) & 0x07) == 0)
+		{
+			line++;
+			rt_kprintf("\r\n");
+			rt_kprintf("%s", tab_prefix[line]);
+		}
+	}
+	return 0;
+}
+MSH_CMD_EXPORT(disp_lms_state, "disp_lms_state");

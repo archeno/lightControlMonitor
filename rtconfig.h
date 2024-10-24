@@ -10,7 +10,7 @@
 #define RT_ALIGN_SIZE 8
 #define RT_THREAD_PRIORITY_32
 #define RT_THREAD_PRIORITY_MAX 32
-#define RT_TICK_PER_SECOND 100
+#define RT_TICK_PER_SECOND 1000
 #define RT_USING_OVERFLOW_CHECK
 #define RT_USING_HOOK
 #define RT_HOOK_USING_FUNC_PTR
@@ -283,6 +283,7 @@
 #define BSP_USING_HWTIMER2
 #define BSP_USING_HWTIMER3
 #define BSP_USING_HWTIMER4
+#define BSP_USING_HWTIMER6
 #define BSP_USING_WDT
 
 /* Board extended module Drivers */

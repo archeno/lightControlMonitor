@@ -47,8 +47,14 @@
         "drv_usart.h": "c",
         "rthw.h": "c",
         "gd32f4xx_gpio.h": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "lms.h": "c",
+        "lmsuart.h": "c"
     },
-    "cortex-debug.variableUseNaturalFormat": true,
-    "idf.portWin": "COM5"
+    "editor.formatOnSave": true,
+    "files.trimFinalNewlines": true, // 删除文件末尾多余的空行
+    "files.trimTrailingWhitespace": true, // 删除行末尾的多余空白字符
+    "cortex-debug.variableUseNaturalFormat": false,
+    "idf.portWin": "COM5",
+    "C_Cpp.autocomplete": "default"
 }

@@ -29,11 +29,11 @@
 #include <rtthread.h>
 #include <rthw.h>
 
-#define DBG_TAG           "kernel.device"
+#define DBG_TAG "kernel.device"
 #ifdef RT_DEBUG_DEVICE
-#define DBG_LVL           DBG_LOG
+#define DBG_LVL DBG_LOG
 #else
-#define DBG_LVL           DBG_WARNING
+#define DBG_LVL DBG_WARNING
 #endif /* defined (RT_DEBUG_DEVICE) */
 #include <rtdbg.h>
 
@@ -65,15 +65,15 @@ static rt_device_t _console_device = RT_NULL;
 
 rt_weak void rt_hw_us_delay(rt_uint32_t us)
 {
-    (void) us;
+    (void)us;
     LOG_W("rt_hw_us_delay() doesn't support for this board."
-        "Please consider implementing rt_hw_us_delay() in another file.");
+          "Please consider implementing rt_hw_us_delay() in another file.");
 }
 
 rt_weak void rt_hw_cpu_reset(void)
 {
     LOG_W("rt_hw_cpu_reset() doesn't support for this board."
-        "Please consider implementing rt_hw_cpu_reset() in another file.");
+          "Please consider implementing rt_hw_cpu_reset() in another file.");
     return;
 }
 
@@ -82,7 +82,7 @@ rt_weak void rt_hw_cpu_shutdown(void)
     rt_base_t level;
     LOG_I("CPU shutdown...");
     LOG_W("Using default rt_hw_cpu_shutdown()."
-        "Please consider implementing rt_hw_cpu_reset() in another file.");
+          "Please consider implementing rt_hw_cpu_reset() in another file.");
     level = rt_hw_interrupt_disable();
     while (level)
     {
@@ -102,23 +102,23 @@ struct _errno_str_t
     const char *str;
 };
 
-static struct _errno_str_t  rt_errno_strs[] =
-{
-    {RT_EOK     , "OK     "},
-    {RT_ERROR   , "ERROR  "},
-    {RT_ETIMEOUT, "ETIMOUT"},
-    {RT_EFULL   , "ERSFULL"},
-    {RT_EEMPTY  , "ERSEPTY"},
-    {RT_ENOMEM  , "ENOMEM "},
-    {RT_ENOSYS  , "ENOSYS "},
-    {RT_EBUSY   , "EBUSY  "},
-    {RT_EIO     , "EIO    "},
-    {RT_EINTR   , "EINTRPT"},
-    {RT_EINVAL  , "EINVAL "},
-    {RT_ENOENT  , "ENOENT "},
-    {RT_ENOSPC  , "ENOSPC "},
-    {RT_EPERM   , "EPERM  "},
-    {RT_ETRAP   , "ETRAP  "},
+static struct _errno_str_t rt_errno_strs[] =
+    {
+        {RT_EOK, "OK     "},
+        {RT_ERROR, "ERROR  "},
+        {RT_ETIMEOUT, "ETIMOUT"},
+        {RT_EFULL, "ERSFULL"},
+        {RT_EEMPTY, "ERSEPTY"},
+        {RT_ENOMEM, "ENOMEM "},
+        {RT_ENOSYS, "ENOSYS "},
+        {RT_EBUSY, "EBUSY  "},
+        {RT_EIO, "EIO    "},
+        {RT_EINTR, "EINTRPT"},
+        {RT_EINVAL, "EINVAL "},
+        {RT_ENOENT, "ENOENT "},
+        {RT_ENOSPC, "ENOSPC "},
+        {RT_EPERM, "EPERM  "},
+        {RT_ETRAP, "ETRAP  "},
 };
 
 /**
@@ -214,7 +214,7 @@ int *_rt_errno(void)
     tid = rt_thread_self();
     if (tid != RT_NULL)
     {
-        return (int *) & (tid->error);
+        return (int *)&(tid->error);
     }
 
     return (int *)&__rt_errno;
@@ -244,16 +244,16 @@ rt_weak void *rt_memset(void *s, int c, rt_ubase_t count)
 
     return s;
 #else
-#define LBLOCKSIZE      (sizeof(rt_ubase_t))
-#define UNALIGNED(X)    ((long)X & (LBLOCKSIZE - 1))
-#define TOO_SMALL(LEN)  ((LEN) < LBLOCKSIZE)
+#define LBLOCKSIZE (sizeof(rt_ubase_t))
+#define UNALIGNED(X) ((long)X & (LBLOCKSIZE - 1))
+#define TOO_SMALL(LEN) ((LEN) < LBLOCKSIZE)
 
     unsigned int i = 0;
     char *m = (char *)s;
     unsigned long buffer = 0;
     unsigned long *aligned_addr = RT_NULL;
-    unsigned char d = (unsigned int)c & (unsigned char)(-1);  /* To avoid sign extension, copy C to an
-                                unsigned variable. (unsigned)((char)(-1))=0xFF for 8bit and =0xFFFF for 16bit: word independent */
+    unsigned char d = (unsigned int)c & (unsigned char)(-1); /* To avoid sign extension, copy C to an
+                               unsigned variable. (unsigned)((char)(-1))=0xFF for 8bit and =0xFFFF for 16bit: word independent */
 
     RT_ASSERT(LBLOCKSIZE == 2 || LBLOCKSIZE == 4 || LBLOCKSIZE == 8);
 
@@ -267,7 +267,7 @@ rt_weak void *rt_memset(void *s, int c, rt_ubase_t count)
          */
         for (i = 0; i < LBLOCKSIZE; i++)
         {
-            *(((unsigned char *)&buffer)+i) = d;
+            *(((unsigned char *)&buffer) + i) = d;
         }
 
         while (count >= LBLOCKSIZE * 4)
@@ -323,11 +323,11 @@ rt_weak void *rt_memcpy(void *dst, const void *src, rt_ubase_t count)
     if (tmp <= s || tmp > (s + count))
     {
         while (count--)
-            *tmp ++ = *s ++;
+            *tmp++ = *s++;
     }
     else
     {
-        for (len = count; len > 0; len --)
+        for (len = count; len > 0; len--)
             tmp[len - 1] = s[len - 1];
     }
 
@@ -335,10 +335,10 @@ rt_weak void *rt_memcpy(void *dst, const void *src, rt_ubase_t count)
 #else
 
 #define UNALIGNED(X, Y) \
-    (((long)X & (sizeof (long) - 1)) | ((long)Y & (sizeof (long) - 1)))
-#define BIGBLOCKSIZE    (sizeof (long) << 2)
-#define LITTLEBLOCKSIZE (sizeof (long))
-#define TOO_SMALL(LEN)  ((LEN) < BIGBLOCKSIZE)
+    (((long)X & (sizeof(long) - 1)) | ((long)Y & (sizeof(long) - 1)))
+#define BIGBLOCKSIZE (sizeof(long) << 2)
+#define LITTLEBLOCKSIZE (sizeof(long))
+#define TOO_SMALL(LEN) ((LEN) < BIGBLOCKSIZE)
 
     char *dst_ptr = (char *)dst;
     char *src_ptr = (char *)src;
@@ -474,13 +474,13 @@ char *rt_strstr(const char *s1, const char *s2)
     l1 = rt_strlen(s1);
     while (l1 >= l2)
     {
-        l1 --;
+        l1--;
         if (!rt_memcmp(s1, s2, l2))
         {
             return (char *)s1;
         }
 
-        s1 ++;
+        s1++;
     }
 
     return RT_NULL;
@@ -511,8 +511,7 @@ rt_int32_t rt_strcasecmp(const char *a, const char *b)
             ca += 'a' - 'A';
         if (cb >= 'A' && cb <= 'Z')
             cb += 'a' - 'A';
-    }
-    while (ca == cb && ca != '\0');
+    } while (ca == cb && ca != '\0');
 
     return ca - cb;
 }
@@ -605,7 +604,7 @@ rt_int32_t rt_strncmp(const char *cs, const char *ct, rt_size_t count)
             break;
         }
 
-        count --;
+        count--;
     }
 
     return __res;
@@ -724,7 +723,7 @@ void rt_show_version(void)
 RTM_EXPORT(rt_show_version);
 
 /* private function */
-#define _ISDIGIT(c)  ((unsigned)((c) - '0') < 10)
+#define _ISDIGIT(c) ((unsigned)((c) - '0') < 10)
 
 /**
  * @brief  This function will duplicate a string.
@@ -764,28 +763,28 @@ rt_inline int skip_atoi(const char **s)
     return i;
 }
 
-#define ZEROPAD     (1 << 0)    /* pad with zero */
-#define SIGN        (1 << 1)    /* unsigned/signed long */
-#define PLUS        (1 << 2)    /* show plus */
-#define SPACE       (1 << 3)    /* space if plus */
-#define LEFT        (1 << 4)    /* left justified */
-#define SPECIAL     (1 << 5)    /* 0x */
-#define LARGE       (1 << 6)    /* use 'ABCDEF' instead of 'abcdef' */
+#define ZEROPAD (1 << 0) /* pad with zero */
+#define SIGN (1 << 1)    /* unsigned/signed long */
+#define PLUS (1 << 2)    /* show plus */
+#define SPACE (1 << 3)   /* space if plus */
+#define LEFT (1 << 4)    /* left justified */
+#define SPECIAL (1 << 5) /* 0x */
+#define LARGE (1 << 6)   /* use 'ABCDEF' instead of 'abcdef' */
 
 static char *print_number(char *buf,
                           char *end,
 #ifdef RT_KPRINTF_USING_LONGLONG
-                          unsigned long long  num,
+                          unsigned long long num,
 #else
-                          unsigned long  num,
+                          unsigned long num,
 #endif /* RT_KPRINTF_USING_LONGLONG */
-                          int   base,
-                          int   qualifier,
-                          int   s,
+                          int base,
+                          int qualifier,
+                          int s,
 #ifdef RT_PRINTF_PRECISION
-                          int   precision,
+                          int precision,
 #endif /* RT_PRINTF_PRECISION */
-                          int   type)
+                          int type)
 {
     char c = 0, sign = 0;
 #ifdef RT_KPRINTF_USING_LONGLONG
@@ -903,7 +902,7 @@ static char *print_number(char *buf,
                 *buf = ' ';
             }
 
-            ++ buf;
+            ++buf;
         }
     }
 
@@ -913,8 +912,8 @@ static char *print_number(char *buf,
         {
             *buf = sign;
         }
-        -- size;
-        ++ buf;
+        --size;
+        ++buf;
     }
 
 #ifdef RT_PRINTF_SPECIAL
@@ -924,16 +923,16 @@ static char *print_number(char *buf,
         {
             if (buf < end)
                 *buf = '0';
-            ++ buf;
+            ++buf;
             if (buf < end)
                 *buf = 'b';
-            ++ buf;
+            ++buf;
         }
         else if (base == 8)
         {
             if (buf < end)
                 *buf = '0';
-            ++ buf;
+            ++buf;
         }
         else if (base == 16)
         {
@@ -942,12 +941,12 @@ static char *print_number(char *buf,
                 *buf = '0';
             }
 
-            ++ buf;
+            ++buf;
             if (buf < end)
             {
                 *buf = type & LARGE ? 'X' : 'x';
             }
-            ++ buf;
+            ++buf;
         }
     }
 #endif /* RT_PRINTF_SPECIAL */
@@ -962,7 +961,7 @@ static char *print_number(char *buf,
                 *buf = c;
             }
 
-            ++ buf;
+            ++buf;
         }
     }
 
@@ -974,7 +973,7 @@ static char *print_number(char *buf,
             *buf = '0';
         }
 
-        ++ buf;
+        ++buf;
     }
 #endif /* RT_PRINTF_PRECISION */
 
@@ -986,7 +985,7 @@ static char *print_number(char *buf,
             *buf = tmp[i];
         }
 
-        ++ buf;
+        ++buf;
     }
 
     while (size-- > 0)
@@ -996,7 +995,7 @@ static char *print_number(char *buf,
             *buf = ' ';
         }
 
-        ++ buf;
+        ++buf;
     }
 
     return buf;
@@ -1026,14 +1025,14 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
     char *str = RT_NULL, *end = RT_NULL, c = 0;
     const char *s = RT_NULL;
 
-    rt_uint8_t base = 0;            /* the base of number */
-    rt_uint8_t flags = 0;           /* flags to print number */
-    rt_uint8_t qualifier = 0;       /* 'h', 'l', or 'L' for integer fields */
-    rt_int32_t field_width = 0;     /* width of output field */
+    rt_uint8_t base = 0;        /* the base of number */
+    rt_uint8_t flags = 0;       /* flags to print number */
+    rt_uint8_t qualifier = 0;   /* 'h', 'l', or 'L' for integer fields */
+    rt_int32_t field_width = 0; /* width of output field */
 
 #ifdef RT_PRINTF_PRECISION
-    int precision = 0;      /* min. # of digits for integers and max for a string */
-#endif /* RT_PRINTF_PRECISION */
+    int precision = 0; /* min. # of digits for integers and max for a string */
+#endif                 /* RT_PRINTF_PRECISION */
 
     str = buf;
     end = buf + size;
@@ -1041,11 +1040,11 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
     /* Make sure end is always >= buf */
     if (end < buf)
     {
-        end  = ((char *) - 1);
+        end = ((char *)-1);
         size = end - buf;
     }
 
-    for (; *fmt ; ++fmt)
+    for (; *fmt; ++fmt)
     {
         if (*fmt != '%')
         {
@@ -1054,7 +1053,7 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
                 *str = *fmt;
             }
 
-            ++ str;
+            ++str;
             continue;
         }
 
@@ -1064,13 +1063,19 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
         while (1)
         {
             /* skips the first '%' also */
-            ++ fmt;
-            if (*fmt == '-') flags |= LEFT;
-            else if (*fmt == '+') flags |= PLUS;
-            else if (*fmt == ' ') flags |= SPACE;
-            else if (*fmt == '#') flags |= SPECIAL;
-            else if (*fmt == '0') flags |= ZEROPAD;
-            else break;
+            ++fmt;
+            if (*fmt == '-')
+                flags |= LEFT;
+            else if (*fmt == '+')
+                flags |= PLUS;
+            else if (*fmt == ' ')
+                flags |= SPACE;
+            else if (*fmt == '#')
+                flags |= SPECIAL;
+            else if (*fmt == '0')
+                flags |= ZEROPAD;
+            else
+                break;
         }
 
         /* get field width */
@@ -1081,7 +1086,7 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
         }
         else if (*fmt == '*')
         {
-            ++ fmt;
+            ++fmt;
             /* it's the next argument */
             field_width = va_arg(args, int);
             if (field_width < 0)
@@ -1096,14 +1101,14 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
         precision = -1;
         if (*fmt == '.')
         {
-            ++ fmt;
+            ++fmt;
             if (_ISDIGIT(*fmt))
             {
                 precision = skip_atoi(&fmt);
             }
             else if (*fmt == '*')
             {
-                ++ fmt;
+                ++fmt;
                 /* it's the next argument */
                 precision = va_arg(args, int);
             }
@@ -1122,12 +1127,12 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
 #endif /* RT_KPRINTF_USING_LONGLONG */
         {
             qualifier = *fmt;
-            ++ fmt;
+            ++fmt;
 #ifdef RT_KPRINTF_USING_LONGLONG
             if (qualifier == 'l' && *fmt == 'l')
             {
                 qualifier = 'L';
-                ++ fmt;
+                ++fmt;
             }
 #endif /* RT_KPRINTF_USING_LONGLONG */
         }
@@ -1142,8 +1147,9 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
             {
                 while (--field_width > 0)
                 {
-                    if (str < end) *str = ' ';
-                    ++ str;
+                    if (str < end)
+                        *str = ' ';
+                    ++str;
                 }
             }
 
@@ -1153,13 +1159,14 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
             {
                 *str = c;
             }
-            ++ str;
+            ++str;
 
             /* put width */
             while (--field_width > 0)
             {
-                if (str < end) *str = ' ';
-                ++ str;
+                if (str < end)
+                    *str = ' ';
+                ++str;
             }
             continue;
 
@@ -1170,7 +1177,8 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
                 s = "(NULL)";
             }
 
-            for (len = 0; (len != field_width) && (s[len] != '\0'); len++);
+            for (len = 0; (len != field_width) && (s[len] != '\0'); len++)
+                ;
 #ifdef RT_PRINTF_PRECISION
             if (precision > 0 && len > precision)
             {
@@ -1182,22 +1190,25 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
             {
                 while (len < field_width--)
                 {
-                    if (str < end) *str = ' ';
-                    ++ str;
+                    if (str < end)
+                        *str = ' ';
+                    ++str;
                 }
             }
 
             for (i = 0; i < len; ++i)
             {
-                if (str < end) *str = *s;
-                ++ str;
-                ++ s;
+                if (str < end)
+                    *str = *s;
+                ++str;
+                ++s;
             }
 
             while (len < field_width--)
             {
-                if (str < end) *str = ' ';
-                ++ str;
+                if (str < end)
+                    *str = ' ';
+                ++str;
             }
             continue;
 
@@ -1227,7 +1238,7 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
             {
                 *str = '%';
             }
-            ++ str;
+            ++str;
             continue;
 
         /* integer number formats - set up the flags and "break" */
@@ -1255,7 +1266,7 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
             {
                 *str = '%';
             }
-            ++ str;
+            ++str;
 
             if (*fmt)
             {
@@ -1263,11 +1274,11 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
                 {
                     *str = *fmt;
                 }
-                ++ str;
+                ++str;
             }
             else
             {
-                -- fmt;
+                --fmt;
             }
             continue;
         }
@@ -1316,8 +1327,8 @@ rt_weak int rt_vsnprintf(char *buf, rt_size_t size, const char *fmt, va_list arg
     }
 
     /* the trailing null byte doesn't count towards the total
-    * ++str;
-    */
+     * ++str;
+     */
     return str - buf;
 }
 RTM_EXPORT(rt_vsnprintf);
@@ -1359,7 +1370,7 @@ RTM_EXPORT(rt_snprintf);
  */
 int rt_vsprintf(char *buf, const char *format, va_list arg_ptr)
 {
-    return rt_vsnprintf(buf, (rt_size_t) - 1, format, arg_ptr);
+    return rt_vsnprintf(buf, (rt_size_t)-1, format, arg_ptr);
 }
 RTM_EXPORT(rt_vsprintf);
 
@@ -1440,7 +1451,8 @@ rt_device_t rt_console_set_device(const char *name)
     new_device = rt_device_find(name);
 
     /* check whether it's a same device */
-    if (new_device == old_device) return RT_NULL;
+    if (new_device == old_device)
+        return RT_NULL;
 
     if (new_device != RT_NULL)
     {
@@ -1527,7 +1539,8 @@ rt_weak int rt_kprintf(const char *fmt, ...)
     {
         USART0_SEND_MODE();
         rt_device_write(_console_device, 0, rt_log_buf, length);
-        for(int i=0; i<6000; i++);
+        for (int i = 0; i < 6000; i++)
+            ;
         USART0_RECV_MODE();
     }
 #else
@@ -1631,7 +1644,7 @@ void rt_heap_unlock(rt_base_t level) __attribute__((alias("_heap_unlock")));
 #if defined(RT_USING_SMALL_MEM_AS_HEAP)
 static rt_smem_t system_heap;
 rt_inline void _smem_info(rt_size_t *total,
-    rt_size_t *used, rt_size_t *max_used)
+                          rt_size_t *used, rt_size_t *max_used)
 {
     if (total)
         *total = system_heap->total;
@@ -1642,13 +1655,13 @@ rt_inline void _smem_info(rt_size_t *total,
 }
 #define _MEM_INIT(_name, _start, _size) \
     system_heap = rt_smem_init(_name, _start, _size)
-#define _MEM_MALLOC(_size)  \
+#define _MEM_MALLOC(_size) \
     rt_smem_alloc(system_heap, _size)
-#define _MEM_REALLOC(_ptr, _newsize)\
+#define _MEM_REALLOC(_ptr, _newsize) \
     rt_smem_realloc(system_heap, _ptr, _newsize)
 #define _MEM_FREE(_ptr) \
     rt_smem_free(_ptr)
-#define _MEM_INFO(_total, _used, _max)  \
+#define _MEM_INFO(_total, _used, _max) \
     _smem_info(_total, _used, _max)
 #elif defined(RT_USING_MEMHEAP_AS_HEAP)
 static struct rt_memheap system_heap;
@@ -1657,18 +1670,18 @@ void _memheap_free(void *rmem);
 void *_memheap_realloc(struct rt_memheap *heap, void *rmem, rt_size_t newsize);
 #define _MEM_INIT(_name, _start, _size) \
     rt_memheap_init(&system_heap, _name, _start, _size)
-#define _MEM_MALLOC(_size)  \
+#define _MEM_MALLOC(_size) \
     _memheap_alloc(&system_heap, _size)
-#define _MEM_REALLOC(_ptr, _newsize)    \
+#define _MEM_REALLOC(_ptr, _newsize) \
     _memheap_realloc(&system_heap, _ptr, _newsize)
-#define _MEM_FREE(_ptr)   \
+#define _MEM_FREE(_ptr) \
     _memheap_free(_ptr)
-#define _MEM_INFO(_total, _used, _max)   \
+#define _MEM_INFO(_total, _used, _max) \
     rt_memheap_info(&system_heap, _total, _used, _max)
 #elif defined(RT_USING_SLAB_AS_HEAP)
 static rt_slab_t system_heap;
 rt_inline void _slab_info(rt_size_t *total,
-    rt_size_t *used, rt_size_t *max_used)
+                          rt_size_t *used, rt_size_t *max_used)
 {
     if (total)
         *total = system_heap->total;
@@ -1679,17 +1692,17 @@ rt_inline void _slab_info(rt_size_t *total,
 }
 #define _MEM_INIT(_name, _start, _size) \
     system_heap = rt_slab_init(_name, _start, _size)
-#define _MEM_MALLOC(_size)  \
+#define _MEM_MALLOC(_size) \
     rt_slab_alloc(system_heap, _size)
-#define _MEM_REALLOC(_ptr, _newsize)    \
+#define _MEM_REALLOC(_ptr, _newsize) \
     rt_slab_realloc(system_heap, _ptr, _newsize)
 #define _MEM_FREE(_ptr) \
     rt_slab_free(system_heap, _ptr)
-#define _MEM_INFO       _slab_info
+#define _MEM_INFO _slab_info
 #else
 #define _MEM_INIT(...)
-#define _MEM_MALLOC(...)     RT_NULL
-#define _MEM_REALLOC(...)    RT_NULL
+#define _MEM_MALLOC(...) RT_NULL
+#define _MEM_REALLOC(...) RT_NULL
 #define _MEM_FREE(...)
 #define _MEM_INFO(...)
 #endif
@@ -1704,7 +1717,7 @@ rt_inline void _slab_info(rt_size_t *total,
 rt_weak void rt_system_heap_init(void *begin_addr, void *end_addr)
 {
     rt_ubase_t begin_align = RT_ALIGN((rt_ubase_t)begin_addr, RT_ALIGN_SIZE);
-    rt_ubase_t end_align   = RT_ALIGN_DOWN((rt_ubase_t)end_addr, RT_ALIGN_SIZE);
+    rt_ubase_t end_align = RT_ALIGN_DOWN((rt_ubase_t)end_addr, RT_ALIGN_SIZE);
 
     RT_ASSERT(end_align > begin_align);
 
@@ -1803,7 +1816,8 @@ rt_weak void rt_free(void *ptr)
     /* call 'rt_free' hook */
     RT_OBJECT_HOOK_CALL(rt_free_hook, (ptr));
     /* NULL check */
-    if (ptr == RT_NULL) return;
+    if (ptr == RT_NULL)
+        return;
     /* Enter critical zone */
     level = _heap_lock();
     _MEM_FREE(ptr);
@@ -1813,15 +1827,15 @@ rt_weak void rt_free(void *ptr)
 RTM_EXPORT(rt_free);
 
 /**
-* @brief This function will caculate the total memory, the used memory, and
-*        the max used memory.
-*
-* @param total is a pointer to get the total size of the memory.
-*
-* @param used is a pointer to get the size of memory used.
-*
-* @param max_used is a pointer to get the maximum memory used.
-*/
+ * @brief This function will caculate the total memory, the used memory, and
+ *        the max used memory.
+ *
+ * @param total is a pointer to get the total size of the memory.
+ *
+ * @param used is a pointer to get the size of memory used.
+ *
+ * @param max_used is a pointer to get the maximum memory used.
+ */
 rt_weak void rt_memory_info(rt_size_t *total,
                             rt_size_t *used,
                             rt_size_t *max_used)
@@ -1883,7 +1897,7 @@ rt_weak void *rt_malloc_align(rt_size_t size, rt_size_t align)
     rt_size_t align_size = 0;
 
     /* sizeof pointer */
-    uintptr_size = sizeof(void*);
+    uintptr_size = sizeof(void *);
     uintptr_size -= 1;
 
     /* align the alignment size to uintptr size byte */
@@ -1926,8 +1940,9 @@ rt_weak void rt_free_align(void *ptr)
     void *real_ptr = RT_NULL;
 
     /* NULL check */
-    if (ptr == RT_NULL) return;
-    real_ptr = (void *) * (rt_ubase_t *)((rt_ubase_t)ptr - sizeof(void *));
+    if (ptr == RT_NULL)
+        return;
+    real_ptr = (void *)*(rt_ubase_t *)((rt_ubase_t)ptr - sizeof(void *));
     rt_free(real_ptr);
 }
 RTM_EXPORT(rt_free_align);
@@ -1936,13 +1951,12 @@ RTM_EXPORT(rt_free_align);
 #ifndef RT_USING_CPU_FFS
 #ifdef RT_USING_TINY_FFS
 const rt_uint8_t __lowest_bit_bitmap[] =
-{
-    /*  0 - 7  */  0,  1,  2, 27,  3, 24, 28, 32,
-    /*  8 - 15 */  4, 17, 25, 31, 29, 12, 32, 14,
-    /* 16 - 23 */  5,  8, 18, 32, 26, 23, 32, 16,
-    /* 24 - 31 */ 30, 11, 13,  7, 32, 22, 15, 10,
-    /* 32 - 36 */  6, 21,  9, 20, 19
-};
+    {
+        /*  0 - 7  */ 0, 1, 2, 27, 3, 24, 28, 32,
+        /*  8 - 15 */ 4, 17, 25, 31, 29, 12, 32, 14,
+        /* 16 - 23 */ 5, 8, 18, 32, 26, 23, 32, 16,
+        /* 24 - 31 */ 30, 11, 13, 7, 32, 22, 15, 10,
+        /* 32 - 36 */ 6, 21, 9, 20, 19};
 
 /**
  * @brief This function finds the first bit set (beginning with the least significant bit)
@@ -1962,24 +1976,23 @@ int __rt_ffs(int value)
 }
 #else
 const rt_uint8_t __lowest_bit_bitmap[] =
-{
-    /* 00 */ 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 10 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 20 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 30 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 40 */ 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 50 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 60 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 70 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 80 */ 7, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* 90 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* A0 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* B0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* C0 */ 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* D0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* E0 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
-    /* F0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0
-};
+    {
+        /* 00 */ 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 10 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 20 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 30 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 40 */ 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 50 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 60 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 70 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 80 */ 7, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* 90 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* A0 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* B0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* C0 */ 6, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* D0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* E0 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
+        /* F0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0};
 
 /**
  * @brief This function finds the first bit set (beginning with the least significant bit)
@@ -2021,7 +2034,7 @@ int __rt_ffs(int value)
 #endif /* RT_USING_CPU_FFS */
 
 #ifndef __on_rt_assert_hook
-    #define __on_rt_assert_hook(ex, func, line)         __ON_HOOK_ARGS(rt_assert_hook, (ex, func, line))
+#define __on_rt_assert_hook(ex, func, line) __ON_HOOK_ARGS(rt_assert_hook, (ex, func, line))
 #endif
 
 #ifdef RT_USING_DEBUG
@@ -2064,7 +2077,8 @@ void rt_assert_handler(const char *ex_string, const char *func, rt_size_t line)
 #endif /*RT_USING_MODULE*/
         {
             rt_kprintf("(%s) assertion failed at function:%s, line number:%d \n", ex_string, func, line);
-            while (dummy == 0);
+            while (dummy == 0)
+                ;
         }
     }
     else

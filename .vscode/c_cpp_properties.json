@@ -8,6 +8,7 @@
             "defines": [
                 "_DEBUG",
                 "UNICODE",
+                "GD32F425",
                 "_UNICODE"
             ],
             "intelliSenseMode": "gcc-arm",

@@ -38,9 +38,9 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_usart.h"
 
 /* USART register bit offset */
-#define GP_GUAT_OFFSET            ((uint32_t)8U)       /* bit offset of GUAT in USART_GP */
-#define CTL3_SCRTNUM_OFFSET       ((uint32_t)1U)       /* bit offset of SCRTNUM in USART_CTL3 */
-#define RT_BL_OFFSET              ((uint32_t)24U)      /* bit offset of BL in USART_RT */
+#define GP_GUAT_OFFSET ((uint32_t)8U)      /* bit offset of GUAT in USART_GP */
+#define CTL3_SCRTNUM_OFFSET ((uint32_t)1U) /* bit offset of SCRTNUM in USART_CTL3 */
+#define RT_BL_OFFSET ((uint32_t)24U)       /* bit offset of BL in USART_RT */
 
 /*!
     \brief    reset USART/UART
@@ -50,7 +50,8 @@ OF SUCH DAMAGE.
 */
 void usart_deinit(uint32_t usart_periph)
 {
-    switch(usart_periph) {
+    switch (usart_periph)
+    {
     case USART0:
         rcu_periph_reset_enable(RCU_USART0RST);
         rcu_periph_reset_disable(RCU_USART0RST);
@@ -98,7 +99,8 @@ void usart_deinit(uint32_t usart_periph)
 void usart_baudrate_set(uint32_t usart_periph, uint32_t baudval)
 {
     uint32_t uclk = 0U, intdiv = 0U, fradiv = 0U, udiv = 0U;
-    switch(usart_periph) {
+    switch (usart_periph)
+    {
     /* get clock frequency */
     case USART0:
         uclk = rcu_clock_freq_get(CK_APB2);
@@ -127,13 +129,16 @@ void usart_baudrate_set(uint32_t usart_periph, uint32_t baudval)
     default:
         break;
     }
-    if(USART_CTL0(usart_periph) & USART_CTL0_OVSMOD) {
+    if (USART_CTL0(usart_periph) & USART_CTL0_OVSMOD)
+    {
         /* when oversampling by 8, configure the value of USART_BAUD */
         udiv = ((2U * uclk) + baudval / 2U) / baudval;
         intdiv = udiv & 0xfff0U;
         fradiv = (udiv >> 1U) & 0x7U;
         USART_BAUD(usart_periph) = ((USART_BAUD_FRADIV | USART_BAUD_INTDIV) & (intdiv | fradiv));
-    } else {
+    }
+    else
+    {
         /* when oversampling by 16, configure the value of USART_BAUD */
         udiv = (uclk + baudval / 2U) / baudval;
         intdiv = udiv & 0xfff0U;
@@ -158,7 +163,7 @@ void usart_parity_config(uint32_t usart_periph, uint32_t paritycfg)
     /* clear USART_CTL0 PM,PCEN Bits */
     USART_CTL0(usart_periph) &= ~(USART_CTL0_PM | USART_CTL0_PCEN);
     /* configure USART parity mode */
-    USART_CTL0(usart_periph) |= paritycfg ;
+    USART_CTL0(usart_periph) |= paritycfg;
 }
 
 /*!
@@ -300,7 +305,8 @@ void usart_data_first_config(uint32_t usart_periph, uint32_t msbf)
 void usart_invert_config(uint32_t usart_periph, usart_invert_enum invertpara)
 {
     /* inverted or not the specified siginal */
-    switch(invertpara) {
+    switch (invertpara)
+    {
     case USART_DINV_ENABLE:
         USART_CTL3(usart_periph) |= USART_CTL3_DINV;
         break;
@@ -852,9 +858,12 @@ void usart_dma_transmit_config(uint32_t usart_periph, uint32_t dmacmd)
 */
 FlagStatus usart_flag_get(uint32_t usart_periph, usart_flag_enum flag)
 {
-    if(RESET != (USART_REG_VAL(usart_periph, flag) & BIT(USART_BIT_POS(flag)))) {
+    if (RESET != (USART_REG_VAL(usart_periph, flag) & BIT(USART_BIT_POS(flag))))
+    {
         return SET;
-    } else {
+    }
+    else
+    {
         return RESET;
     }
 }
@@ -954,9 +963,12 @@ FlagStatus usart_interrupt_flag_get(uint32_t usart_periph, usart_interrupt_flag_
     /* get the corresponding flag bit status */
     flagstatus = (USART_REG_VAL2(usart_periph, int_flag) & BIT(USART_BIT_POS2(int_flag)));
 
-    if((0U != flagstatus) && (0U != intenable)) {
+    if ((0U != flagstatus) && (0U != intenable))
+    {
         return SET;
-    } else {
+    }
+    else
+    {
         return RESET;
     }
 }

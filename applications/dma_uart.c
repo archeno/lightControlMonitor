@@ -6,10 +6,10 @@
 #define UART_NAME "uart3"
 static rt_uint8_t send_str[20] = "hello";
 static rt_device_t serial;
-rt_thread_t  thread_uart;
+rt_thread_t thread_uart;
 static void uart_thread_entry(void *param)
 {
-    while(1)
+    while (1)
     {
         rt_device_write(serial, 0, send_str, strlen(send_str));
         rt_thread_mdelay(1000);
@@ -24,9 +24,9 @@ int uart_dma_test(void)
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
     config.baud_rate = BAUD_RATE_9600;
     rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
-     LOG_I("enter uar_dma_test");
+    LOG_I("enter uar_dma_test");
     ret = rt_device_open(serial, RT_DEVICE_FLAG_INT_RX);
-    if( ret != RT_EOK)
+    if (ret != RT_EOK)
     {
         LOG_I("open serial %s failed ret is %d", UART_NAME, ret);
     }
