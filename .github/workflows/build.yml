@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: setup cross compiler
         run: sudo apt-get install -y gcc-arm-none-eabi cmake make ninja-build
