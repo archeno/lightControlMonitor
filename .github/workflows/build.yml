@@ -18,8 +18,9 @@ jobs:
       - name: setup cross compiler
         run: sudo apt-get install -y gcc-arm-none-eabi cmake make ninja-build
       - name: check compiler
-        run: which gcc-arm-none-eabi |
-             which arm-none-eabi-gcc
+        run: |
+          which gcc-arm-none-eabi 
+          which arm-none-eabi-gcc
       - name: configure
         run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
