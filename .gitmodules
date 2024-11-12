@@ -1,3 +1,3 @@
-[submodule "packages/freemodbus-latest"]
-	path = packages/freemodbus-latest
-	url = https://github.com/RT-Thread-packages/freemodbus.git
+[submodule "packages/at24cxx-latest"]
+	path = packages/at24cxx-latest
+	url = https://github.com/XiaojieFan/at24cxx.git
