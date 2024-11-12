@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: setup cross compiler
-        run: sudo apt-get install -y gcc-arm-none-eabi
+        run: sudo apt-get install -y gcc-arm-none-eabi cmake make ninja
 
       - name: configure
         run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
