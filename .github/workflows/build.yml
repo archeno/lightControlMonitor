@@ -19,6 +19,7 @@ jobs:
         run: sudo apt-get install -y gcc-arm-none-eabi cmake make ninja-build
       - name: check compiler
         run: |
+          echo $PATH
           which gcc-arm-none-eabi || echo "gcc-arm-none-eabi not found"
           which arm-none-eabi-gcc || echo "arm-none-eabi-gcc not found"
       - name: configure
