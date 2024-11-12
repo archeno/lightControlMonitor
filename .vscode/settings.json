@@ -1,5 +1,5 @@
 {
-    "files.encoding": "gbk",
+    "files.encoding": "utf8",
     "files.associations": {
         "dfs_file.h": "c",
         "rtdevice.h": "c",
@@ -56,5 +56,12 @@
     "files.trimTrailingWhitespace": true, // 删除行末尾的多余空白字符
     "cortex-debug.variableUseNaturalFormat": false,
     "idf.portWin": "COM5",
-    "C_Cpp.autocomplete": "default"
+    "C_Cpp.autocomplete": "default",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "[makefile]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 8
+    }
 }
