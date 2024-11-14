@@ -63,5 +63,6 @@
     "[makefile]": {
         "editor.insertSpaces": false,
         "editor.tabSize": 8
-    }
+    },
+    "iis.configDir": ""
 }
