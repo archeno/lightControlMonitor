@@ -2,22 +2,22 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR cortex-m4)
+#SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-# SET(CMAKE_VERBOSE_MAKEFILE ON)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-SET(CMAKE_C_COMPILER "arm-none-eabi-gcc")
-SET(CMAKE_ASM_COMPILER "arm-none-eabi-gcc")
+SET(CMAKE_C_COMPILER "D:/programfiles/env-windows-v1.3.5/tools/ConEmu/ConEmu/../../../tools/gnu_gcc/arm_gcc/mingw/bin/arm-none-eabi-gcc.exe")
+SET(CMAKE_ASM_COMPILER "D:/programfiles/env-windows-v1.3.5/tools/ConEmu/ConEmu/../../../tools/gnu_gcc/arm_gcc/mingw/bin/arm-none-eabi-gcc.exe")
 SET(CMAKE_C_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Dgcc -O0 -gdwarf-2 -g")
 SET(CMAKE_ASM_FLAGS " -c -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -x assembler-with-cpp -Wa,-mimplicit-it=thumb  -gdwarf-2")
 SET(CMAKE_C_COMPILER_WORKS TRUE)
 
-SET(CMAKE_CXX_COMPILER "arm-none-eabi-g++")
+SET(CMAKE_CXX_COMPILER "D:/programfiles/env-windows-v1.3.5/tools/ConEmu/ConEmu/../../../tools/gnu_gcc/arm_gcc/mingw/bin/arm-none-eabi-g++.exe")
 SET(CMAKE_CXX_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Dgcc -O0 -gdwarf-2 -g")
 SET(CMAKE_CXX_COMPILER_WORKS TRUE)
 
-SET(CMAKE_OBJCOPY "arm-none-eabi-objcopy")
-SET(CMAKE_SIZE "arm-none-eabi-size")
+SET(CMAKE_OBJCOPY "D:/programfiles/env-windows-v1.3.5/tools/ConEmu/ConEmu/../../../tools/gnu_gcc/arm_gcc/mingw/bin/arm-none-eabi-objcopy.exe")
+SET(CMAKE_SIZE "D:/programfiles/env-windows-v1.3.5/tools/ConEmu/ConEmu/../../../tools/gnu_gcc/arm_gcc/mingw/bin/arm-none-eabi-size.exe")
 
 SET(CMAKE_EXE_LINKER_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map=rtthread.map,-cref,-u,Reset_Handler -T ${CMAKE_SOURCE_DIR}/board/linker_scripts/link.ld")
 
@@ -35,6 +35,7 @@ INCLUDE_DIRECTORIES(
 	rt-thread/libcpu/arm/common
 	rt-thread/libcpu/arm/cortex-m4
 	rt-thread/components/drivers/include
+	rt-thread/components/drivers/spi
 	board
 	libraries/gd32_drivers
 	rt-thread/components/finsh
@@ -59,27 +60,32 @@ ADD_DEFINITIONS(
 
 SET(PROJECT_SOURCES
 	packages/agile_modbus-v1.1.2/util/agile_modbus_slave_util.c
+	packages/agile_modbus-v1.1.2/src/agile_modbus_rtu.c
 	packages/agile_modbus-v1.1.2/src/agile_modbus_tcp.c
 	packages/agile_modbus-v1.1.2/src/agile_modbus.c
-	packages/agile_modbus-v1.1.2/src/agile_modbus_rtu.c
-	applications/uart5.c
-	applications/dma_uart.c
-	applications/event_monitor.c
-	applications/adc_sample.c
-	applications/lmsuart.c
-	applications/io.c
-	applications/crc16.c
-	applications/lms.c
-	applications/can_response.c
-	applications/main.c
-	applications/modbus_master.c
-	applications/mycan.c
-	applications/i2c_app.c
-	applications/rs_485.c
-	applications/database.c
-	applications/pulse_generate.c
 	applications/tca9535.c
+	applications/database.c
+	applications/key_function.c
+	applications/hmi.c
+	applications/i2c_app.c
+	applications/main.c
+	applications/multi_button.c
+	applications/crc16.c
+	applications/spi_driver.c
+	applications/can_response.c
+	applications/modbus_master.c
+	applications/uart5.c
+	applications/mycan.c
+	applications/pulse_generate.c
+	applications/event_monitor.c
+	applications/lms.c
+	applications/adc_sample.c
 	applications/global.c
+	applications/dma_uart.c
+	applications/rs_485.c
+	applications/io.c
+	applications/lmsuart.c
+	applications/oled_driver.c
 	packages/at24cxx-latest/at24cxx.c
 	rt-thread/components/libc/compilers/common/cctype.c
 	rt-thread/components/libc/compilers/common/cstdlib.c
@@ -108,6 +114,8 @@ SET(PROJECT_SOURCES
 	rt-thread/components/drivers/misc/adc.c
 	rt-thread/components/drivers/misc/pin.c
 	rt-thread/components/drivers/serial/serial.c
+	rt-thread/components/drivers/spi/spi_core.c
+	rt-thread/components/drivers/spi/spi_dev.c
 	rt-thread/components/drivers/watchdog/watchdog.c
 	board/board.c
 	libraries/GD32F4xx_Firmware_Library/CMSIS/GD/GD32F4xx/Source/GCC/startup_gd32f4xx.s
@@ -116,6 +124,7 @@ SET(PROJECT_SOURCES
 	libraries/gd32_drivers/drv_gpio.c
 	libraries/gd32_drivers/drv_hwtimer.c
 	libraries/gd32_drivers/drv_soft_i2c.c
+	libraries/gd32_drivers/drv_spi.c
 	libraries/gd32_drivers/drv_usart.c
 	libraries/gd32_drivers/drv_wdt.c
 	rt-thread/components/finsh/shell.c
@@ -145,6 +154,7 @@ SET(PROJECT_SOURCES
 	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_fwdgt.c
 	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_misc.c
 	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_usart.c
+	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_spi.c
 	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_adc.c
 	libraries/GD32F4xx_Firmware_Library/CMSIS/GD/GD32F4xx/Source/system_gd32f4xx.c
 	libraries/GD32F4xx_Firmware_Library/GD32F4xx_standard_peripheral/Source/gd32f4xx_wwdgt.c
@@ -159,5 +169,5 @@ LINK_LIBRARIES(
 )
 
 ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}.elf ${PROJECT_SOURCES})
-ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD
-	COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf)
+ADD_CUSTOM_COMMAND(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD 
+COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}.elf)

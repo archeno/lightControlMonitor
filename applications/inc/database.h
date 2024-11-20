@@ -64,27 +64,28 @@ struct ccr_datastruct
 	rt_uint16_t ccr_relay_state : 1;
 	rt_uint16_t ccr_power_on_state : 1;
 	rt_uint16_t ccr_reserved : 13;
-	union {
+	union
+	{
 		rt_uint16_t ccr_alarm_state;
-		struct {
-		rt_uint8_t power_off :1;	//市电掉电关机
-		rt_uint8_t open_circuit:1;	//回路开路关机
-		rt_uint8_t oc_fault:1;	//过流保护关机
-		rt_uint8_t ccr_module_fault:1;    
-		rt_uint8_t rv_dv:1;        //bit4 rv/dv
-		rt_uint8_t idensity_fail:1;  //光级不符
-		rt_uint8_t open_circuit_prealarm:1;		//回路开路预警
-		rt_uint8_t open_circuit_alarm:1;  	// bit7 回路开路报警
-		
-		rt_uint8_t  VA_drop_10_percent:1; 	//回路短路预警 /VA跌落10%
-		rt_uint8_t  short_circuit_alarm:1;	  //回路短路报警
-		rt_uint8_t  insulation_res_prealarm:1; //bit 10 绝缘电阻越限预警
-		rt_uint8_t  insulatin_res_alarm:1;  	//bit 11 绝缘电阻越限报警
-		rt_uint8_t  lamp_prealarm:1;  			//bit 12 坏等数越限预警
-		rt_uint8_t  lamp_alarm:1;  				//bit 13 坏等数越限报警
-		rt_uint8_t	insulatin_module_alarm:1;  //bit 14 绝缘电阻模块故障
-		rt_uint8_t  ccr_module_alarm:1;			//bit 15 调光器模块故障
-		
+		struct
+		{
+			rt_uint8_t power_off : 1;	 // 市电掉电关机
+			rt_uint8_t open_circuit : 1; // 回路开路关机
+			rt_uint8_t oc_fault : 1;	 // 过流保护关机
+			rt_uint8_t ccr_module_fault : 1;
+			rt_uint8_t rv_dv : 1;				  // bit4 rv/dv
+			rt_uint8_t idensity_fail : 1;		  // 光级不符
+			rt_uint8_t open_circuit_prealarm : 1; // 回路开路预警
+			rt_uint8_t open_circuit_alarm : 1;	  // bit7 回路开路报警
+
+			rt_uint8_t VA_drop_10_percent : 1;		// 回路短路预警 /VA跌落10%
+			rt_uint8_t short_circuit_alarm : 1;		// 回路短路报警
+			rt_uint8_t insulation_res_prealarm : 1; // bit 10 绝缘电阻越限预警
+			rt_uint8_t insulatin_res_alarm : 1;		// bit 11 绝缘电阻越限报警
+			rt_uint8_t lamp_prealarm : 1;			// bit 12 坏等数越限预警
+			rt_uint8_t lamp_alarm : 1;				// bit 13 坏等数越限报警
+			rt_uint8_t insulatin_module_alarm : 1;	// bit 14 绝缘电阻模块故障
+			rt_uint8_t ccr_module_alarm : 1;		// bit 15 调光器模块故障
 		};
 	};
 	// union

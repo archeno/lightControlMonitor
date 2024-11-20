@@ -12,7 +12,7 @@
 #ifdef RT_USING_SPI
 
 #if defined(BSP_USING_SPI0) || defined(BSP_USING_SPI1) || defined(BSP_USING_SPI2) || defined(BSP_USING_SPI3) || defined(BSP_USING_SPI4)
-#define LOG_TAG              "drv.spi"
+#define LOG_TAG "drv.spi"
 
 #include <rtdbg.h>
 
@@ -46,8 +46,8 @@ static const struct gd32_spi spi_bus_obj[] = {
         GPIO_AF_5,
 #endif
         GPIO_PIN_5,
-        GPIO_PIN_6,
         GPIO_PIN_7,
+        GPIO_PIN_6,
     },
 #endif /* BSP_USING_SPI0 */
 
@@ -121,20 +121,20 @@ static const struct gd32_spi spi_bus_obj[] = {
 };
 
 /* private rt-thread spi ops function */
-static rt_err_t spi_configure(struct rt_spi_device* device, struct rt_spi_configuration* configuration);
-static rt_uint32_t spixfer(struct rt_spi_device* device, struct rt_spi_message* message);
+static rt_err_t spi_configure(struct rt_spi_device *device, struct rt_spi_configuration *configuration);
+static rt_ssize_t spixfer(struct rt_spi_device *device, struct rt_spi_message *message);
 
 static struct rt_spi_ops gd32_spi_ops =
-{
-    .configure = spi_configure,
-    .xfer = spixfer,
+    {
+        .configure = spi_configure,
+        .xfer = spixfer,
 };
 
 /**
-* @brief SPI Initialization
-* @param gd32_spi: SPI BUS
-* @retval None
-*/
+ * @brief SPI Initialization
+ * @param gd32_spi: SPI BUS
+ * @retval None
+ */
 static void gd32_spi_init(struct gd32_spi *gd32_spi)
 {
     /* enable SPI clock */
@@ -143,10 +143,10 @@ static void gd32_spi_init(struct gd32_spi *gd32_spi)
 
 #if defined SOC_SERIES_GD32F4xx
     /*GPIO pin configuration*/
-    gpio_af_set(gd32_spi->spi_port, gd32_spi->alt_func_num, gd32_spi->sck_pin | gd32_spi->mosi_pin | gd32_spi->miso_pin);
+    gpio_af_set(gd32_spi->spi_port, gd32_spi->alt_func_num, gd32_spi->sck_pin | gd32_spi->miso_pin | gd32_spi->mosi_pin);
 
-    gpio_mode_set(gd32_spi->spi_port, GPIO_MODE_AF, GPIO_PUPD_NONE, gd32_spi->sck_pin | gd32_spi->mosi_pin | gd32_spi->miso_pin);
-    gpio_output_options_set(gd32_spi->spi_port, GPIO_OTYPE_PP, GPIO_OSPEED_200MHZ, gd32_spi->sck_pin | gd32_spi->mosi_pin | gd32_spi->miso_pin);
+    gpio_mode_set(gd32_spi->spi_port, GPIO_MODE_AF, GPIO_PUPD_NONE, gd32_spi->sck_pin | gd32_spi->miso_pin | gd32_spi->mosi_pin);
+    gpio_output_options_set(gd32_spi->spi_port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, gd32_spi->sck_pin | gd32_spi->miso_pin | gd32_spi->mosi_pin);
 #else
     /* Init SPI SCK MOSI */
     gpio_init(gd32_spi->spi_port, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, gd32_spi->sck_pin | gd32_spi->mosi_pin);
@@ -154,13 +154,12 @@ static void gd32_spi_init(struct gd32_spi *gd32_spi)
     /* Init SPI MISO */
     gpio_init(gd32_spi->spi_port, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, gd32_spi->miso_pin);
 #endif
-
 }
 
-static rt_err_t spi_configure(struct rt_spi_device* device,
-                          struct rt_spi_configuration* configuration)
+static rt_err_t spi_configure(struct rt_spi_device *device,
+                              struct rt_spi_configuration *configuration)
 {
-    struct rt_spi_bus * spi_bus = (struct rt_spi_bus *)device->bus;
+    struct rt_spi_bus *spi_bus = (struct rt_spi_bus *)device->bus;
     struct gd32_spi *spi_device = (struct gd32_spi *)spi_bus->parent.user_data;
     spi_parameter_struct spi_init_struct;
     uint32_t spi_periph = spi_device->spi_periph;
@@ -168,15 +167,15 @@ static rt_err_t spi_configure(struct rt_spi_device* device,
     RT_ASSERT(device != RT_NULL);
     RT_ASSERT(configuration != RT_NULL);
 
-    //Init SPI
+    // Init SPI
     gd32_spi_init(spi_device);
 
     /* data_width */
-    if(configuration->data_width <= 8)
+    if (configuration->data_width <= 8)
     {
         spi_init_struct.frame_size = SPI_FRAMESIZE_8BIT;
     }
-    else if(configuration->data_width <= 16)
+    else if (configuration->data_width <= 16)
     {
         spi_init_struct.frame_size = SPI_FRAMESIZE_16BIT;
     }
@@ -207,31 +206,31 @@ static rt_err_t spi_configure(struct rt_spi_device* device,
         }
         spi_apb_clock = rcu_clock_freq_get(spi_src);
 
-        if(max_hz >= spi_apb_clock/2)
+        if (max_hz >= spi_apb_clock / 2)
         {
             spi_init_struct.prescale = SPI_PSC_2;
         }
-        else if (max_hz >= spi_apb_clock/4)
+        else if (max_hz >= spi_apb_clock / 4)
         {
             spi_init_struct.prescale = SPI_PSC_4;
         }
-        else if (max_hz >= spi_apb_clock/8)
+        else if (max_hz >= spi_apb_clock / 8)
         {
             spi_init_struct.prescale = SPI_PSC_8;
         }
-        else if (max_hz >= spi_apb_clock/16)
+        else if (max_hz >= spi_apb_clock / 16)
         {
             spi_init_struct.prescale = SPI_PSC_16;
         }
-        else if (max_hz >= spi_apb_clock/32)
+        else if (max_hz >= spi_apb_clock / 32)
         {
             spi_init_struct.prescale = SPI_PSC_32;
         }
-        else if (max_hz >= spi_apb_clock/64)
+        else if (max_hz >= spi_apb_clock / 64)
         {
             spi_init_struct.prescale = SPI_PSC_64;
         }
-        else if (max_hz >= spi_apb_clock/128)
+        else if (max_hz >= spi_apb_clock / 128)
         {
             spi_init_struct.prescale = SPI_PSC_128;
         }
@@ -242,7 +241,7 @@ static rt_err_t spi_configure(struct rt_spi_device* device,
         }
     } /* baudrate */
 
-    switch(configuration->mode & RT_SPI_MODE_3)
+    switch (configuration->mode & RT_SPI_MODE_3)
     {
     case RT_SPI_MODE_0:
         spi_init_struct.clock_polarity_phase = SPI_CK_PL_LOW_PH_1EDGE;
@@ -259,7 +258,7 @@ static rt_err_t spi_configure(struct rt_spi_device* device,
     }
 
     /* MSB or LSB */
-    if(configuration->mode & RT_SPI_MSB)
+    if (configuration->mode & RT_SPI_MSB)
     {
         spi_init_struct.endian = SPI_ENDIAN_MSB;
     }
@@ -282,86 +281,92 @@ static rt_err_t spi_configure(struct rt_spi_device* device,
     return RT_EOK;
 };
 
-static rt_uint32_t spixfer(struct rt_spi_device* device, struct rt_spi_message* message)
+static rt_ssize_t spixfer(struct rt_spi_device *device, struct rt_spi_message *message)
 {
-    struct rt_spi_bus * gd32_spi_bus = (struct rt_spi_bus *)device->bus;
+    struct rt_spi_bus *gd32_spi_bus = (struct rt_spi_bus *)device->bus;
     struct gd32_spi *spi_device = (struct gd32_spi *)gd32_spi_bus->parent.user_data;
-    struct rt_spi_configuration * config = &device->config;
-    struct gd32_spi_cs * gd32_spi_cs = device->parent.user_data;
+    struct rt_spi_configuration *config = &device->config;
+    struct gd32_spi_cs *gd32_spi_cs = device->parent.user_data;
+    rt_base_t cs_pin = (rt_base_t)device->parent.user_data;
     uint32_t spi_periph = spi_device->spi_periph;
 
     RT_ASSERT(device != NULL);
     RT_ASSERT(message != NULL);
 
     /* take CS */
-    if(message->cs_take)
+    if (message->cs_take)
     {
-        gpio_bit_reset(gd32_spi_cs->GPIOx, gd32_spi_cs->GPIO_Pin);
+        rt_pin_write(cs_pin, PIN_LOW);
+        // gpio_bit_reset(gd32_spi_cs->GPIOx, gd32_spi_cs->GPIO_Pin);
         LOG_D("spi take cs\n");
     }
 
     {
-        if(config->data_width <= 8)
+        if (config->data_width <= 8)
         {
-            const rt_uint8_t * send_ptr = message->send_buf;
-            rt_uint8_t * recv_ptr = message->recv_buf;
+            const rt_uint8_t *send_ptr = message->send_buf;
+            rt_uint8_t *recv_ptr = message->recv_buf;
             rt_uint32_t size = message->length;
 
             LOG_D("spi poll transfer start: %d\n", size);
 
-            while(size--)
+            while (size--)
             {
                 rt_uint8_t data = 0xFF;
 
-                if(send_ptr != RT_NULL)
+                if (send_ptr != RT_NULL)
                 {
                     data = *send_ptr++;
                 }
 
                 // Todo: replace register read/write by gd32f4 lib
-                //Wait until the transmit buffer is empty
-                while(RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_TBE));
+                // Wait until the transmit buffer is empty
+                while (RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_TBE))
+                    ;
                 // Send the byte
                 spi_i2s_data_transmit(spi_periph, data);
 
-                //Wait until a data is received
-                while(RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_RBNE));
+                // Wait until a data is received
+                while (RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_RBNE))
+                    ;
                 // Get the received data
                 data = spi_i2s_data_receive(spi_periph);
 
-                if(recv_ptr != RT_NULL)
+                if (recv_ptr != RT_NULL)
                 {
                     *recv_ptr++ = data;
                 }
             }
             LOG_D("spi poll transfer finsh\n");
         }
-        else if(config->data_width <= 16)
+        else if (config->data_width <= 16)
         {
-            const rt_uint16_t * send_ptr = message->send_buf;
-            rt_uint16_t * recv_ptr = message->recv_buf;
+            const rt_uint16_t *send_ptr = message->send_buf;
+            rt_uint16_t *recv_ptr = message->recv_buf;
             rt_uint32_t size = message->length;
 
-            while(size--)
+            while (size--)
             {
                 rt_uint16_t data = 0xFF;
 
-                if(send_ptr != RT_NULL)
+                if (send_ptr != RT_NULL)
                 {
                     data = *send_ptr++;
                 }
 
-                //Wait until the transmit buffer is empty
-                while(RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_TBE));
+                // Wait until the transmit buffer is empty
+                while (RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_TBE))
+                    ;
                 // Send the byte
                 spi_i2s_data_transmit(spi_periph, data);
 
-                //Wait until a data is received
-                while(RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_RBNE));
+                // Wait until a data is received
+                while (RESET == spi_i2s_flag_get(spi_periph, SPI_FLAG_RBNE))
+                    ;
                 // Get the received data
                 data = spi_i2s_data_receive(spi_periph);
 
-                if(recv_ptr != RT_NULL)
+                if (recv_ptr != RT_NULL)
                 {
                     *recv_ptr++ = data;
                 }
@@ -370,9 +375,10 @@ static rt_uint32_t spixfer(struct rt_spi_device* device, struct rt_spi_message* 
     }
 
     /* release CS */
-    if(message->cs_release)
+    if (message->cs_release)
     {
-        gpio_bit_set(gd32_spi_cs->GPIOx, gd32_spi_cs->GPIO_Pin);
+        rt_pin_write(cs_pin, PIN_HIGH);
+        // gpio_bit_set(gd32_spi_cs->GPIOx, gd32_spi_cs->GPIO_Pin);
         LOG_D("spi release cs\n");
     }
 
@@ -380,8 +386,8 @@ static rt_uint32_t spixfer(struct rt_spi_device* device, struct rt_spi_message* 
 };
 
 /**
-  * Attach the spi device to SPI bus, this function must be used after initialization.
-  */
+ * Attach the spi device to SPI bus, this function must be used after initialization.
+ */
 rt_err_t rt_hw_spi_device_attach(const char *bus_name, const char *device_name, rt_base_t cs_pin)
 {
     RT_ASSERT(bus_name != RT_NULL);
@@ -394,7 +400,7 @@ rt_err_t rt_hw_spi_device_attach(const char *bus_name, const char *device_name, 
     spi_device = (struct rt_spi_device *)rt_malloc(sizeof(struct rt_spi_device));
     RT_ASSERT(spi_device != RT_NULL);
 
-    if(cs_pin != PIN_NONE)
+    if (cs_pin != PIN_NONE)
     {
         /* initialize the cs pin && select the slave*/
         rt_pin_mode(cs_pin, PIN_MODE_OUTPUT);

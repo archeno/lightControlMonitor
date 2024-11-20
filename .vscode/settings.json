@@ -49,7 +49,9 @@
         "gd32f4xx_gpio.h": "c",
         "cmath": "c",
         "lms.h": "c",
-        "lmsuart.h": "c"
+        "lmsuart.h": "c",
+        "drv_spi.h": "c",
+        "spi_driver.h": "c"
     },
     "editor.formatOnSave": true,
     "files.trimFinalNewlines": true, // 删除文件末尾多余的空行

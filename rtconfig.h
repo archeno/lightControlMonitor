@@ -87,6 +87,7 @@
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
 #define RT_USING_ADC
+#define RT_USING_SPI
 #define RT_USING_WDT
 
 /* Using USB */
@@ -279,6 +280,7 @@
 #define BSP_USING_ADC
 #define BSP_USING_ADC0
 #define BSP_USING_TIM
+#define BSP_USING_HWTIMER0
 #define BSP_USING_HWTIMER1
 #define BSP_USING_HWTIMER2
 #define BSP_USING_HWTIMER3
