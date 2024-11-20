@@ -237,7 +237,7 @@ void hmi_test(void *param)
     // oled_displayChar(3, 0, "I2: ");
     // oled_displayCurrentAppend(g_ccr_data.ccr_info.i_load);
     //  oled_cmd_send(CMD_CLR);
-    rt_thread_mdelay(10);
+    rt_thread_mdelay(200);
     /**/
   }
 }
