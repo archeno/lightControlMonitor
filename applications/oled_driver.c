@@ -99,6 +99,33 @@ void draw_circle(uint8_t x, uint8_t y, uint8_t r, uint8_t fil, uint8_t z)
   oled_data_send(fil); // fil=0:空心圆；fil=1:实心圆
   oled_data_send(z);   // 绘点或消点
 }
+
+void draw_line(uint8_t y1, uint8_t x1, uint8_t y2, uint8_t x2, uint8_t fill)
+{
+  oled_data_send(0x61);
+  oled_data_send(y1);   // 垂直开始地址
+  oled_data_send(x1);   // 水平开始地址
+  oled_data_send(y2);   // 垂直结束地址
+  oled_data_send(x2);   // 水平结束地址
+  oled_data_send(fill); // 绘点或消点
+}
+
+void draw_rec(uint8_t y1, uint8_t x1, uint8_t y2, uint8_t x2, uint8_t fill, uint8_t display)
+{
+  if (fill)
+  {
+    oled_data_send(0x63);
+  }
+  else
+  {
+    oled_data_send(0x62);
+  }
+  oled_data_send(y1);      // 垂直开始地址
+  oled_data_send(x1);      // 水平开始地址
+  oled_data_send(y2);      // 垂直结束地址
+  oled_data_send(x2);      // 水平结束地址
+  oled_data_send(display); // 绘点或消点
+}
 void INTER_chhzes(rt_uint8_t y, rt_uint8_t x, rt_uint8_t m, rt_uint8_t n, rt_uint8_t rev, rt_uint8_t *s)
 {
   rt_uint8_t len = rt_strlen((const char *)s);
@@ -119,22 +146,31 @@ void INTER_chhzes(rt_uint8_t y, rt_uint8_t x, rt_uint8_t m, rt_uint8_t n, rt_uin
 
 void oled_displayChar(rt_uint8_t char_with, rt_uint8_t y, rt_uint8_t x, const rt_uint8_t *s)
 {
-  rt_uint8_t y_point = 16;
-  rt_uint8_t x_point = char_with;
-  // rt_uint8_t y_point = 24;
-  // rt_uint8_t x_point = 24;
+  // rt_uint8_t y_point = 16;
+  // rt_uint8_t x_point = char_with;
+  // // rt_uint8_t y_point = 24;
+  // // rt_uint8_t x_point = 24;
 
-  rt_uint8_t coloums = OLED_X_POITNS / x_point; // 240/8 = 30
-  rt_uint8_t rows = OLED_Y_POITNS / y_point;    // 128/16 = 8
+  // rt_uint8_t coloums = OLED_X_POITNS / x_point; // 240/8 = 30
+  // rt_uint8_t rows = OLED_Y_POITNS / y_point;    // 128/16 = 8
 
   rt_uint8_t len = rt_strlen((const char *)s);
   oled_cmd_send(CMD_LOCAL_CHAR_DISP);
-  oled_data_send(y * y_point); // ??????
-  oled_data_send(x * x_point); // ?????
-  oled_data_send(y_point);     // ????????????
-  oled_data_send(x_point);     // ???????????
-  oled_data_send(len);         // ???????
-  oled_data_send(0);           // rev=0:?????????rev=1:???????
+  oled_data_send((y - 1) * char_with); // ??????
+  oled_data_send((x - 1) * char_with); // ?????
+  if (char_with > 8)
+  {
+    oled_data_send(char_with); // ????????????
+    oled_data_send(char_with); // ???????????
+  }
+  else
+  {
+    oled_data_send(char_with * 2); // ????????????
+    oled_data_send(char_with);     // ???????????
+  }
+
+  oled_data_send(len); // ???????
+  oled_data_send(0);   // rev=0:?????????rev=1:???????
 
   while (*s != '\0')
     oled_data_send(*s++);

@@ -274,3 +274,21 @@ static int disp_lms_state(int argc, char *argv[])
 	return 0;
 }
 MSH_CMD_EXPORT(disp_lms_state, "disp_lms_state");
+
+static int change_lms_state(int argc, char *argv[])
+{
+	rt_int8_t index, data;
+	if (argc < 3)
+	{
+		LOG_E("lms_change [index] [data]");
+		return 0;
+	}
+
+	index = my_atoi(argv[1]);
+	data = my_atoi(argv[2]);
+
+	g_lms.terminalState[index] = data;
+	rt_mb_send(&mb, (rt_ubase_t)index);
+	return 0;
+}
+MSH_CMD_EXPORT(change_lms_state, "change_lms_state");

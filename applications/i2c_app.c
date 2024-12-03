@@ -36,16 +36,16 @@ const static struct sys_param sys_default_para =
 		// .In_b = 0.0f,
 		.In_a2 = 0,
 		// .In_a1 =22.213f,
-		.In_a1 = 26.014f,
+		.In_a1 = 11.61f,
 		// .In_a2 = 0,
 		// .In_a1 = 14.7f,
 		// .In_b = -0.217f,
-		.In_b = -0.15f,
+		.In_b = 0,
 
 		//.Un_a = 794.37f,
-		.Un_a = 2634.2f,
+		.Un_a = 577.7f,
 		//.Un_b = -0.872f,
-		.Un_b = -102.34f,
+		.Un_b = -9.04f,
 };
 
 // void update_sys_data_to_ccr_data()

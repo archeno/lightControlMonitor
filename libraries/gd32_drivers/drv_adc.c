@@ -117,8 +117,6 @@ static const struct gd32_adc adc_obj[] = {
 rt_align(4)
     rt_uint16_t adc_value[SAMPLES * ADC_CANNEL_NUM];
 
-
-
 // rt_uint32_t  out_rms[3];
 rt_uint32_t rms[ADC_CANNEL_NUM];
 float rms_adc_voltage[ADC_CANNEL_NUM][RMS_WINDOWN_SIZE + 1];
@@ -130,7 +128,6 @@ rt_uint16_t rms_adc_cal_voltage_avg[ADC_CANNEL_NUM];
 rt_uint32_t tmp_diff_result;
 void cal_rms(rt_uint16_t *cur)
 {
-
     rt_uint32_t sample_val[ADC_CANNEL_NUM][2]; // 第一列存储正半周的值，第二列负半周值
     rt_uint32_t diff_max = 0;
     rt_uint16_t cnt_p_n[ADC_CANNEL_NUM][2];
@@ -190,6 +187,8 @@ void cal_rms(rt_uint16_t *cur)
     rms_adc_cal_voltage_avg[E_I_LOAD_RMS] = (rms_adc_voltage[E_I_LOAD_RMS][RMS_WINDOWN_SIZE] * get_In_a1() + get_In_b()) * 100; // * get_In_a1()+get_In_b())*100; //0.01A
     if (count >= RMS_WINDOWN_SIZE)
     {
+        update_i_load(rms_adc_cal_voltage_avg[E_I_LOAD_RMS]);
+        update_load_voltage(rms_adc_cal_voltage_avg[E_U_LOAD_RMS]);
         count = 0;
     }
 }

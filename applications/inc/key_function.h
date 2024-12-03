@@ -6,6 +6,7 @@
 typedef enum
 {
 	MENU_HOME = 0,
+	MENU_VI,
 	MENU_UPS,
 	MENU_IO,
 	MENU_SETTING,

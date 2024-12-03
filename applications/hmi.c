@@ -3,9 +3,10 @@
 #include "database.h"
 #include "key_function.h"
 #include <oled_driver.h>
+#include "lmsuart.h"
 
 hmi_state_t g_hmi_data;
-
+#define RADIUS 8
 extern const char *ccr_alarm_define_str[];
 
 // rt_uint8_t num_table[][16] = {
@@ -81,7 +82,7 @@ extern const char *ccr_alarm_define_str[];
 
 typedef void (*disp_func)(void);
 rt_uint8_t disp_inver_flag = 0;
-void home_disp(void)
+void vi_disp(void)
 {
 
   char disp_buf[240];
@@ -92,12 +93,12 @@ void home_disp(void)
 
   rt_snprintf(disp_buf, 240, "%d.%02dA ", g_ccr_data.ccr_info.local_i_load / 100,
               g_ccr_data.ccr_info.local_i_load % 100);
-  oled_displayChar(16, 3, 1, disp_buf);
+  oled_displayChar(16, 4, 2, disp_buf);
 
   rt_snprintf(disp_buf, 240, "%d.%dV   ", g_ccr_data.ccr_info.local_v_load / 10,
               g_ccr_data.ccr_info.local_v_load % 10);
 
-  oled_displayChar(16, 3, 8, disp_buf);
+  oled_displayChar(16, 4, 9, disp_buf);
   // ups:%c inter:%c
   rt_snprintf(disp_buf, 240, "Can0:%s Can1:%s 485:%s", g_ccr_data.ccr_info.can0_comm_fail_flag ? "异常" : "正常",
               g_ccr_data.ccr_info.can1_comm_fail_flag ? "异常" : "正常",
@@ -106,6 +107,178 @@ void home_disp(void)
   oled_displayMix(6, 0, disp_buf);
 }
 
+// static uint16_t dec2hex(uint8_t data)
+// {
+//   uint8_t high_byte = 0;
+//   uint8_t low_byte = 0;
+//   high_byte = data/16
+// }
+
+// rt_weak int rt_kprintf(const char *fmt, ...)
+// {
+//     va_list args;
+//     rt_size_t length = 0;
+//     static char rt_log_buf[RT_CONSOLEBUF_SIZE];
+
+//     va_start(args, fmt);
+//     /* the return value of vsnprintf is the number of bytes that would be
+//      * written to buffer had if the size of the buffer been sufficiently
+//      * large excluding the terminating null byte. If the output string
+//      * would be larger than the rt_log_buf, we have to adjust the output
+//      * length. */
+//     length = rt_vsnprintf(rt_log_buf, sizeof(rt_log_buf) - 1, fmt, args);
+//     if (length > RT_CONSOLEBUF_SIZE - 1)
+//     {
+//         length = RT_CONSOLEBUF_SIZE - 1;
+//     }
+
+//     va_end(args);
+
+//     return length;
+// }
+
+/**
+ * @brief
+ *
+ * @param data 待编码的数据，不同的数据绘制不同图形表示
+ *        0x00:实心圆  0x0b:空心圆 0x74:带横杠的空闲圆 0x7f:带竖杠的空心圆 0xff:带×的空心圆
+ * @param row 行（1~8）
+ * @param column 列（1~15）
+ * @param radius 圆的半径
+ * @param fill 是否填充
+ */
+void draw_mark(uint8_t data, uint8_t row, uint8_t column, uint8_t display)
+{
+
+  switch (data)
+  {
+  case 0x00: // 亮灯/siu 激活电源正常 实心圆
+    draw_circle((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + RADIUS, RADIUS, 1, display);
+    break;
+  case 0x0b: // 灭灯/siu 激活电源不正常 空心圆
+    draw_circle((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + RADIUS, RADIUS, 0, display);
+    break;
+  case 0x74: // 未激活 带横杠的空心圆
+    draw_circle((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + RADIUS, RADIUS, 0, display);
+    draw_line((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS, (row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + 2 * RADIUS, display);
+    break;
+  case 0x7f: // 检测到飞机 带竖杠的空心圆
+    draw_circle((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + RADIUS, RADIUS, 0, display);
+    draw_line((row - 1) * 3 * RADIUS, (column - 1) * 3 * RADIUS + RADIUS, (row - 1) * 3 * RADIUS + 2 * RADIUS, (column - 1) * 3 * RADIUS + RADIUS, display);
+    break;
+  case 0xff: // 无应答  带X的空心圆
+    draw_circle((row - 1) * 3 * RADIUS + RADIUS, (column - 1) * 3 * RADIUS + RADIUS, RADIUS, 0, 1);
+    draw_line((row - 1) * 3 * RADIUS + RADIUS - 5, (column - 1) * 3 * RADIUS + RADIUS - 5, (row - 1) * 3 * RADIUS + RADIUS + 5, (column - 1) * 3 * RADIUS + RADIUS + 5, display);
+    draw_line((row - 1) * 3 * RADIUS + RADIUS + 5, (column - 1) * 3 * RADIUS + RADIUS - 5, (row - 1) * 3 * RADIUS + RADIUS - 5, (column - 1) * 3 * RADIUS + RADIUS + 5, display);
+    break;
+  default:
+    break;
+  }
+}
+uint8_t data_table[32] = {
+    0x00,
+    0x00,
+    0x74,
+    0x7f,
+    0xff,
+    0xff,
+    0x00,
+    0x0b,
+    0x00,
+    0x00,
+    0x74,
+    0x7f,
+    0xff,
+    0xff,
+    0x00,
+    0x0b,
+    0x00,
+    0x00,
+    0x74,
+    0x7f,
+    0x0b,
+    0xff,
+    0x00,
+    0xff,
+    0x00,
+    0x00,
+    0x00,
+    0x7f,
+    0x00,
+    0xff,
+    0x00,
+    0xff,
+};
+// void oled_mark_clear(uint8_t y, uint8_t x)
+// {
+// }
+static uint8_t g_firstrun = 1;
+void lms_status_disp()
+{
+  uint8_t radius = 8;
+  rt_ubase_t lms_index;
+  rt_uint8_t lms_row, lms_col;
+
+  if (g_firstrun)
+  {
+    oled_displayChar(8, 1, 1, "   01 02 03 04 05 06 07 08");
+    oled_displayChar(8, 4, 1, "01");
+    oled_displayChar(8, 7, 1, "02");
+    oled_displayChar(8, 10, 1, "03");
+    oled_displayChar(8, 13, 1, "04");
+    oled_displayChar(8, 16, 1, "05");
+    g_firstrun = 0;
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 8; j++)
+      {
+        draw_mark(0x00, i + 2, j + 2, 0);
+        draw_mark(g_lms.terminalState[i * 8 + j], i + 2, j + 2, 1);
+      }
+  }
+  else
+  {
+    if (RT_EOK == rt_mb_recv(&mb, &lms_index, RT_WAITING_NO))
+    {
+      lms_row = lms_index / 8;
+      lms_col = lms_index % 8;
+      draw_mark(0x00, lms_row + 2, lms_col + 2, 0);
+      draw_mark(g_lms.terminalState[lms_row * 8 + lms_col], lms_row + 2, lms_col + 2, 1);
+    }
+  }
+
+  // oled_clear();
+
+  // draw_mark(0x00, 2, 2);
+
+  // draw_mark(0x0b, 2, 3);
+
+  // draw_mark(0x74, 2, 4);
+
+  // draw_mark(0x7f, 2, 5);
+
+  // draw_mark(0xff, 2, 6);
+
+  // // 带横线的圆
+  // draw_circle(5 * 8, 1 * 8, 8, 0, 1);
+  // // draw_line(5 * 8, 0, 5 * 8, 2 * 8, 1);
+
+  // // 带横线的圆
+  // draw_circle(7 * 8, 1 * 8, 8, 0, 1);
+  // draw_line(7 * 8, 0, 7 * 8, 2 * 8, 1);
+
+  // // 带竖线的圆
+  // draw_circle(9 * 8, 1 * 8, 8, 0, 1);
+  // draw_line(8 * 8, 1 * 8, 10 * 8, 1 * 8, 1);
+
+  // // 带x 的圆
+  // draw_circle(11 * 8, 1 * 8, 8, 0, 1);
+  // draw_line(11 * 8 - 5, 1 * 8 - 5, 11 * 8 + 5, 1 * 8 + 5, 1);
+  // draw_line(11 * 8 + 5, 1 * 8 - 5, 11 * 8 - 5, 1 * 8 + 5, 1);
+  // //
+
+  // draw_circle(5 * 8, 1 * 8, 8, 0, flag);
+  // draw_circle(3 * 8, 1 * 8, 8, 1, 0);
+}
 // static void alarm_disp()
 // {
 //   // ccr_alarm_t ccr_alarm = {0};
@@ -213,7 +386,7 @@ void settings_disp(void)
     oled_displayGBK_16(2, 4, "恢复成功");
   }
 }
-disp_func display_table[MENU_NUM] = {home_disp, ups_disp, io_disp, settings_disp};
+disp_func display_table[MENU_NUM] = {lms_status_disp, vi_disp, ups_disp, io_disp, settings_disp};
 
 void hmi_test(void *param)
 {
@@ -225,6 +398,7 @@ void hmi_test(void *param)
     {
       last_menu = g_cur_menu;
       oled_clear();
+      g_firstrun = 1;
       g_hmi_data.show_result_flag = 0;
     }
     display_table[g_cur_menu]();

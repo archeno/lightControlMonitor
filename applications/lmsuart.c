@@ -2,8 +2,28 @@
 #include "lmsuart.h"
 #include "rs_485.h"
 #include "lms.h"
+#include "board.h"
 void timer0_txDelay_stop(void);
 void timer0_txDelay_start(void);
+
+struct rt_mailbox mb;
+/* 用于放邮件的内存池 */
+static char mb_pool[128];
+
+static void lms_mailbox_init()
+{
+    rt_err_t result;
+    /* 初始化一个 mailbox */
+    result = rt_mb_init(&mb,
+                        "lms_mbt",           /* 名称是 mbt */
+                        &mb_pool[0],         /* 邮箱用到的内存池是 mb_pool */
+                        sizeof(mb_pool) / 4, /* 邮箱中的邮件数目，因为一封邮件占 4 字节 */
+                        RT_IPC_FLAG_FIFO);   /* 采用 FIFO 方式进行线程等待 */
+    if (result != RT_EOK)
+    {
+        rt_kprintf("init mailbox failed.\n");
+    }
+}
 
 lms_t g_lms;
 /**
@@ -61,6 +81,8 @@ void lms_init(lms_t *lms)
     lms->waitToRecvicntLeft = WAIT_CROSS_CNT - 1;
     lms->terminal_index = 0;
     rt_memset(lms->terminalState, 0xff, TERMIANL_NUM);
+
+    lms_mailbox_init();
 }
 uint8_t lms_uart_recv_byte()
 {
@@ -139,7 +161,15 @@ void lms_state_machine(lms_t *lms)
         if (lms->terminal_index < TERMIANL_NUM)
         {
             uint8_t recvdata = lms_uart_recv_byte();
-            lms->terminalState[lms->terminal_index] = recvdata;
+            if (recvdata != lms->terminalState[lms->terminal_index])
+            {
+                // lms_changed_info_t *lms_info = (lms_changed_info_t *)rt_malloc(sizeof(lms_changed_info_t));
+                // lms_info->lms_index = lms->terminal_index;
+                // lms_info->data = recvdata;
+                lms->terminalState[lms->terminal_index] = recvdata;
+                rt_mb_send(&mb, (rt_ubase_t)lms->terminal_index);
+            }
+
             lms->terminal_index++;
         }
         else

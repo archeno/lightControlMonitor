@@ -43,6 +43,7 @@ typedef struct
 } lms_t;
 extern lms_t g_lms;
 
+extern struct rt_mailbox mb;
 void lms_set_send_cmd(uint8_t cmd);
 void lms_uart_send_byte(uint8_t data);
 /**

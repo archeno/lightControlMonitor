@@ -175,9 +175,10 @@ void menu_setting_key_enter_func(void)
 
 key_function key_func_table[MENU_NUM][4] = {
 
-	{menu_home_key_set_func, menu_home_key_up_func, menu_home_key_down_func, menu_home_key_enter_func},
-	{menu_ups_key_set_func, menu_ups_key_up_func, menu_ups_key_down_func, menu_ups_key_enter_func},
-	{menu_io_key_set_func, menu_io_key_up_func, menu_io_key_down_func, menu_io_key_enter_func},
+	{page_settings, page_up, page_down, page_home},
+	{page_settings, page_up, page_down, menu_home_key_enter_func},
+	{menu_ups_key_set_func, page_up, page_down, menu_ups_key_enter_func},
+	{menu_io_key_set_func, page_up, page_down, menu_io_key_enter_func},
 	// 	{menu_com_key_set_func, menu_com_key_up_func, menu_com_key_down_func, menu_com_key_enter_func},
 	{menu_setting_key_set_func, menu_setting_key_up_func, menu_setting_down_func, menu_setting_key_enter_func},
 };

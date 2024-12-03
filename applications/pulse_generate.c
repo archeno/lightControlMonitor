@@ -219,6 +219,7 @@ int pulse_generate_init()
     pulse_timer_init();
     // init pulse_pin-- led2
     led_gpio_init();
+
     lms_init(&g_lms);
 }
 INIT_COMPONENT_EXPORT(pulse_generate_init);

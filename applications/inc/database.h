@@ -220,7 +220,7 @@ rt_inline void update_load_voltage(rt_uint32_t voltage)
 	{
 		voltage = 0;
 	}
-	// g_ccr_data.ccr_info.local_v_load = voltage;
+	g_ccr_data.ccr_info.local_v_load = voltage;
 	// g_ccr_data.ccr_info.local_v_load = 300;
 }
 
