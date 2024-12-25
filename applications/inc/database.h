@@ -152,7 +152,7 @@ struct ccr_datastruct
 	// rt_uint16_t run_time_lv3;
 	// rt_uint16_t run_time_lv4;
 	// rt_uint16_t run_time_lv5;
-	// rt_uint16_t run_time_avg_lv5;
+	// rt_uint16_t run_time_avg_lv5;`
 	// rt_uint16_t status;    //鐘舵�佸瓧
 	// rt_uint16_t run_status; //杩愯?岀姸鎬佸瓧
 	// rt_uint16_t alarm_switch;
@@ -164,6 +164,7 @@ struct ccr_datastruct
 	rt_uint16_t local_i_load;		 // 回路电流	0.01A	//0x79
 	rt_uint16_t local_v_load;		 // 回路电压  	0.1v
 	rt_uint16_t local_real_idensity; // 实际光级
+	rt_uint16_t local_active_power;	 // 回路有功功率  W
 
 	float adc_val_iload;
 	float adc_val_vload;
@@ -212,8 +213,12 @@ extern ccr_data_t g_ccr_data;
 //{
 //	return g_ccr_data.ccr_info.freq;
 // }
-
+rt_inline void update_active_power(uint16_t power)
+{
+	g_ccr_data.ccr_info.local_active_power = power;
+}
 /** load voltage **/
+
 rt_inline void update_load_voltage(rt_uint32_t voltage)
 {
 	if (voltage <= 200)

@@ -114,55 +114,62 @@ static const struct gd32_adc adc_obj[] = {
 #endif
 };
 
+#define VOLTAGE_FACTOR() (1.0f / 4095 * 3.3f * get_Un_a() + get_Un_b())
 rt_align(4)
     rt_uint16_t adc_value[SAMPLES * ADC_CANNEL_NUM];
 
 // rt_uint32_t  out_rms[3];
 rt_uint32_t rms[ADC_CANNEL_NUM];
+float active_power;
+rt_uint32_t apparent_power;
 float rms_adc_voltage[ADC_CANNEL_NUM][RMS_WINDOWN_SIZE + 1];
+float p_adc_value[RMS_WINDOWN_SIZE + 1];
 rt_uint16_t rms_adc_cal_voltage_avg[ADC_CANNEL_NUM];
 // x/4095 *3.348 = 1.496 --> x = 1829
 #define VREFCONST 1840 // 1826
 #define BM_THRESHOLD 150
 // #define BM_BIAS_THRESHOLD
 rt_uint32_t tmp_diff_result;
+// rt_uint32_t dma_value[ADC_CANNEL_NUM][SAMPLES]; //
 void cal_rms(rt_uint16_t *cur)
 {
-    rt_uint32_t sample_val[ADC_CANNEL_NUM][2]; // 第一列存储正半周的值，第二列负半周值
+    rt_uint32_t sample_square[ADC_CANNEL_NUM]; // 第一列存储正半周的值，第二列负半周值
+    rt_uint32_t sample_value[ADC_CANNEL_NUM];  //
     rt_uint32_t diff_max = 0;
-    rt_uint16_t cnt_p_n[ADC_CANNEL_NUM][2];
+    rt_uint16_t cnt_p_n[ADC_CANNEL_NUM];
 
     rt_int32_t tmp;
     rt_uint32_t tmp_square;
     rt_uint32_t tmp_diff = 0;
     static rt_uint8_t bm_cnt = 0;
     static rt_uint8_t count = 0;
-    rt_memset(sample_val, 0, sizeof(sample_val));
+    // rt_memset(dma_value, 0, sizeof(dma_value));
+    rt_memset(sample_square, 0, sizeof(sample_square));
     rt_memset(cnt_p_n, 0, sizeof(cnt_p_n));
+    uint32_t temp_active_power = 0;
     // rt_memset(diff_max, 0, sizeof(diff_max));
     for (int i = 0; i < SAMPLES * ADC_CANNEL_NUM; i += ADC_CANNEL_NUM)
     {
+        // temp_active_power += cur[i];
         for (int j = 0; j < ADC_CANNEL_NUM; j++)
         {
             tmp = (cur[i + j] - VREFCONST);
             tmp_square = tmp * tmp;
-            if (tmp > 0)
-            {
-                sample_val[j][0] += tmp_square;
-                cnt_p_n[j][0]++;
-            }
-            else
-            {
-                sample_val[j][1] += tmp_square;
-                cnt_p_n[j][1]++;
-            }
+            sample_value[j] = tmp;
+            sample_square[j] += tmp_square;
         }
+        // dma_value[E_U_LOAD_RMS][i] = tmp;
+        // dma_value[E_I_LOAD_RMS][i + 1] = tmp;
+        temp_active_power += (sample_value[E_U_LOAD_RMS]) * (sample_value[E_I_LOAD_RMS]);
     }
 
+    // 计算有功功率
+    // active_power = temp_active_power / SAMPLES * 1.0f / 4095 * 3.3f * 4.28f + 7.04;
+    p_adc_value[count] = temp_active_power / SAMPLES * 1.0f / 4095 * 3.3f * 4.28f + 7.04;
     for (int i = 0; i < ADC_CANNEL_NUM; i++)
     {
 
-        rms[i] = (sample_val[i][0] + sample_val[i][1]) / SAMPLES;
+        rms[i] = sample_square[i] / SAMPLES;
         rms[i] = sqrt(rms[i]);
 
         // rms[i] = rms[i]/4095.0f * 3.3 *100;
@@ -173,6 +180,7 @@ void cal_rms(rt_uint16_t *cur)
 
     count++;
     float voltage_temp[2] = {0};
+    float p_temp = 0;
     // rt_uint32_t voltage_temp_cal[2] ={0};
     for (int j = 0; j < ADC_CANNEL_NUM; j++)
     {
@@ -183,22 +191,29 @@ void cal_rms(rt_uint16_t *cur)
         voltage_temp[j] /= RMS_WINDOWN_SIZE;
         rms_adc_voltage[j][RMS_WINDOWN_SIZE] = voltage_temp[j];
     }
+    for (int i = 0; i < RMS_WINDOWN_SIZE; i++)
+    {
+        p_temp += p_adc_value[i];
+    }
+    p_temp /= RMS_WINDOWN_SIZE;
+    p_adc_value[RMS_WINDOWN_SIZE] = p_temp;
     rms_adc_cal_voltage_avg[E_U_LOAD_RMS] = (rms_adc_voltage[E_U_LOAD_RMS][RMS_WINDOWN_SIZE] * get_Un_a() + get_Un_b()) * 10;   // (rms[E_U_LOAD_RMS] * get_Un_a()+get_Un_b())*10; //0.1V
     rms_adc_cal_voltage_avg[E_I_LOAD_RMS] = (rms_adc_voltage[E_I_LOAD_RMS][RMS_WINDOWN_SIZE] * get_In_a1() + get_In_b()) * 100; // * get_In_a1()+get_In_b())*100; //0.01A
     if (count >= RMS_WINDOWN_SIZE)
     {
         update_i_load(rms_adc_cal_voltage_avg[E_I_LOAD_RMS]);
         update_load_voltage(rms_adc_cal_voltage_avg[E_U_LOAD_RMS]);
+        update_active_power((uint16_t)p_adc_value[RMS_WINDOWN_SIZE]);
         count = 0;
     }
 }
-// if(sample_val[1][0] > sample_val[1][1])
+// if(sample_square[1][0] > sample_square[1][1])
 // {
-//     tmp_diff = (sample_val[1][0] - sample_val[1][1]);
+//     tmp_diff = (sample_square[1][0] - sample_square[1][1]);
 // }
 // else
 // {
-//     tmp_diff = (sample_val[1][1] - sample_val[1][0]);
+//     tmp_diff = (sample_square[1][1] - sample_square[1][0]);
 // }
 
 // tmp_diff = tmp_diff/SAMPLES;
