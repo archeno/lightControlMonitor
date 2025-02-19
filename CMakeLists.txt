@@ -5,19 +5,18 @@ SET(CMAKE_SYSTEM_PROCESSOR cortex-m4)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-SET(CMAKE_C_COMPILER "arm-none-eabi-gcc.exe")
-SET(CMAKE_ASM_COMPILER "arm-none-eabi-gcc.exe")
+SET(CMAKE_C_COMPILER "arm-none-eabi-gcc")
+SET(CMAKE_ASM_COMPILER "arm-none-eabi-gcc")
 SET(CMAKE_C_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Dgcc -O0 -gdwarf-2 -g")
 SET(CMAKE_ASM_FLAGS " -c -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -x assembler-with-cpp -Wa,-mimplicit-it=thumb  -gdwarf-2")
 SET(CMAKE_C_COMPILER_WORKS TRUE)
 
-SET(CMAKE_CXX_COMPILER "arm-none-eabi-g++.exe")
+SET(CMAKE_CXX_COMPILER "arm-none-eabi-g++")
 SET(CMAKE_CXX_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Dgcc -O0 -gdwarf-2 -g")
 SET(CMAKE_CXX_COMPILER_WORKS TRUE)
 
-SET(CMAKE_OBJCOPY "arm-none-eabi-objcopy.exe")
-SET(CMAKE_SIZE "arm-none-eabi-size.exe")
+SET(CMAKE_OBJCOPY "arm-none-eabi-objcopy")
+SET(CMAKE_SIZE "arm-none-eabi-size")
 
 SET(CMAKE_EXE_LINKER_FLAGS " -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wl,--gc-sections,-Map=rtthread.map,-cref,-u,Reset_Handler -T ${CMAKE_SOURCE_DIR}/board/linker_scripts/link.ld")
 
