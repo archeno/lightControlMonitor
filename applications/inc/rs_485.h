@@ -8,8 +8,8 @@ extern "C"
 #include <board.h>
 #include <rtdevice.h>
 #include <stdint.h>
-#define USART0_DR_PIN GET_PIN(A, 7) // GET_PIN(A, 7)
-#define USART2_DR_PIN GET_PIN(A, 1)
+#define USART0_DR_PIN GET_PIN(C, 6) // GET_PIN(A, 7)
+#define USART2_DR_PIN GET_PIN(A, 15)
 
     typedef enum
     {

@@ -45,8 +45,8 @@ typedef struct
 } rs_485_config_t;
 
 const rs_485_config_t rs_485_config[RS_485_NUM] = {
-    {.uart_name = "uart0", .rx_sem_name = "uart0_sem", uart0_ind_cb, GET_PIN(A, 7)},
-    {.uart_name = "uart2", .rx_sem_name = "uart2_sem", uart2_ind_cb, GET_PIN(A, 1)}};
+    {.uart_name = "uart0", .rx_sem_name = "uart0_sem", uart0_ind_cb, USART0_DR_PIN},
+    {.uart_name = "uart2", .rx_sem_name = "uart2_sem", uart2_ind_cb, USART2_DR_PIN}};
 
 static void _delay_us(uint32_t us)
 {
@@ -122,9 +122,9 @@ static int rs_485_init(void)
         }
     }
     // ups baud 2400
-    /* step2£ºÐÞ¸Ä´®¿ÚÅäÖÃ²ÎÊý */
-    struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT; /* ³õÊ¼»¯ÅäÖÃ²ÎÊý */
-    config.baud_rate = BAUD_RATE_4800;                         // ÐÞ¸Ä²¨ÌØÂÊÎª 2400
+    /* step2ï¿½ï¿½ï¿½Þ¸Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ */
+    struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT; /* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ */
+    config.baud_rate = BAUD_RATE_4800;                         // ï¿½Þ¸Ä²ï¿½ï¿½ï¿½ï¿½ï¿½Îª 2400
     rt_device_control(rs_485_objs[RS_485_UART2].dev, RT_DEVICE_CTRL_CONFIG, &config);
 
     // usart_interrupt_disable(USART2, USART_INT_RBNE);

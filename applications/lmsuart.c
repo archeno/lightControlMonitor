@@ -7,18 +7,18 @@ void timer0_txDelay_stop(void);
 void timer0_txDelay_start(void);
 
 struct rt_mailbox mb;
-/* ÓÃÓÚ·ÅÓÊ¼şµÄÄÚ´æ³Ø */
+/* ï¿½ï¿½ï¿½Ú·ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ */
 static char mb_pool[128];
 
 static void lms_mailbox_init()
 {
     rt_err_t result;
-    /* ³õÊ¼»¯Ò»¸ö mailbox */
+    /* ï¿½ï¿½Ê¼ï¿½ï¿½Ò»ï¿½ï¿½ mailbox */
     result = rt_mb_init(&mb,
-                        "lms_mbt",           /* Ãû³ÆÊÇ mbt */
-                        &mb_pool[0],         /* ÓÊÏäÓÃµ½µÄÄÚ´æ³ØÊÇ mb_pool */
-                        sizeof(mb_pool) / 4, /* ÓÊÏäÖĞµÄÓÊ¼şÊıÄ¿£¬ÒòÎªÒ»·âÓÊ¼şÕ¼ 4 ×Ö½Ú */
-                        RT_IPC_FLAG_FIFO);   /* ²ÉÓÃ FIFO ·½Ê½½øĞĞÏß³ÌµÈ´ı */
+                        "lms_mbt",           /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ mbt */
+                        &mb_pool[0],         /* ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ mb_pool */
+                        sizeof(mb_pool) / 4, /* ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ÎªÒ»ï¿½ï¿½ï¿½Ê¼ï¿½Õ¼ 4 ï¿½Ö½ï¿½ */
+                        RT_IPC_FLAG_FIFO);   /* ï¿½ï¿½ï¿½ï¿½ FIFO ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ÌµÈ´ï¿½ */
     if (result != RT_EOK)
     {
         rt_kprintf("init mailbox failed.\n");
@@ -27,9 +27,9 @@ static void lms_mailbox_init()
 
 lms_t g_lms;
 /**
- * @brief ·¢ËÍÒ»¸ö×Ö½ÚÊı¾İ£¬¹ıÁãÊ±ÇĞ»»Îª½ÓÊÕ×´Ì¬
+ * @brief ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ğ»ï¿½Îªï¿½ï¿½ï¿½ï¿½×´Ì¬
  *
- * @param byte ´ı·¢ËÍµÄÊı¾İ
+ * @param byte ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½
  */
 void lms_uart_send_byte(uint8_t byte)
 {
@@ -40,13 +40,13 @@ void lms_uart_send_byte(uint8_t byte)
     //     ;
 }
 /**
- * @brief ¸ù¾İ½ÓÊÕµÄÃüÁî¹¹½¨´ı·¢ËÍµÄÊı¾İÌî³äcmd_infoĞÅÏ¢
+ * @brief ï¿½ï¿½ï¿½İ½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½î¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cmd_infoï¿½ï¿½Ï¢
  *
- * @param group_id ¿ØÖÆ¶ÔÏó×éºÅ
- * @param seg_id ¿ØÖÆ¶ÔÏó¶ÎºÅ
- * @param cmd    ¿ØÖÆÃüÁî ¹ØµÆ0x02  ¿ªµÆ0x03
+ * @param group_id ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @param seg_id ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Îºï¿½
+ * @param cmd    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Øµï¿½0x02  ï¿½ï¿½ï¿½ï¿½0x03
  *
- *  ×¢£ºÈç¹ûÉÏ´ÎÃüÁîÎ´·¢ËÍÍê³É£¬Ôò±¾´ÎÃüÁî²»Óè´¦Àí
+ *  ×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É£ï¿½ï¿½ò±¾´ï¿½ï¿½ï¿½ï¿½î²»ï¿½è´¦ï¿½ï¿½
  */
 void build_ctrl_cmd(uint8_t group_id, uint8_t seg_id, uint8_t cmd)
 {
@@ -89,7 +89,7 @@ uint8_t lms_uart_recv_byte()
     uint8_t received_data = 0xff;
     if (usart_flag_get(USART2, USART_FLAG_RBNE))
     {
-        // ¶ÁÈ¡Êı¾İ¼Ä´æÆ÷
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½İ¼Ä´ï¿½ï¿½ï¿½
         received_data = usart_data_receive(USART2);
     }
     return received_data;
@@ -124,21 +124,21 @@ void send_state_machine(lms_t *lms)
     }
 }
 
-// STATE_INIT,        // ³õÊ¼½×¶Î,µÈ´ıÍ¬²½ĞÅºÅ½øÈë·¢ËÍÌ¬
-//     STATE_TX_SS,   // ¼ì²âµ½¹ıÁãĞÅºÅ£¬ÑÓÊ±2.5ms½øÈë·¢ËÍÌ¬£¨ÓĞÃüÁîÔò·¢ËÍÃüÁî£¬Ã»ÓĞÔò·¢ËÍÍ¬²½ÃüÁî£©
-//     STATE_TX_LS,   // ·¢ËÍ³¤ÃüÁî
-//     STATE_WAITRCV, // µÈ´ı3¸ö¹ıÁãĞÅºÅ¶ÁÈ¡µÚÒ»¸ö
-//     STATE_RECVING, // ½ÓÊÕ×´Ì¬
-//     STATE_COMPLETE // ½ÓÊÕÍê³É
+// STATE_INIT,        // ï¿½ï¿½Ê¼ï¿½×¶ï¿½,ï¿½È´ï¿½Í¬ï¿½ï¿½ï¿½ÅºÅ½ï¿½ï¿½ë·¢ï¿½ï¿½Ì¬
+//     STATE_TX_SS,   // ï¿½ï¿½âµ½ï¿½ï¿½ï¿½ï¿½ï¿½ÅºÅ£ï¿½ï¿½ï¿½Ê±2.5msï¿½ï¿½ï¿½ë·¢ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î£¬Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½î£©
+//     STATE_TX_LS,   // ï¿½ï¿½ï¿½Í³ï¿½ï¿½ï¿½ï¿½ï¿½
+//     STATE_WAITRCV, // ï¿½È´ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅºÅ¶ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½
+//     STATE_RECVING, // ï¿½ï¿½ï¿½ï¿½×´Ì¬
+//     STATE_COMPLETE // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void lms_state_machine(lms_t *lms)
 {
 
     switch (lms->state)
     {
     case STATE_INIT:
-        // todo: Èç¹ûÂú×ã·¢ËÍÌõ¼şÔò½øÈë·¢ËÍ×´Ì¬
+        // todo: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã·¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë·¢ï¿½ï¿½×´Ì¬
         lms->state = STATE_TX;
-        USART2_SEND_MODE(); // ÉèÖÃÎª·¢ËÍÄ£Ê½,×¼±¸Êı¾İ
+        USART2_SEND_MODE(); // ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ä£Ê½,×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         // start 2.5ms timer, in timer0callback to decide to State_tx_ss or State_tx_ss
         //  or to state_tx_ls
         break;
@@ -153,11 +153,11 @@ void lms_state_machine(lms_t *lms)
         }
         else
         {
-            USART2_RECV_MODE(); // ÉèÖÃÎª½ÓÊÕÄ£Ê½,µÈ´ı½ÓÊÕÊı¾İ
+            USART2_RECV_MODE(); // ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ä£Ê½,ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             lms->state = STATE_RECVING;
         }
         break;
-    case STATE_RECVING: // ½ÓÊÕÊı¾İ
+    case STATE_RECVING: // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (lms->terminal_index < TERMIANL_NUM)
         {
             uint8_t recvdata = lms_uart_recv_byte();

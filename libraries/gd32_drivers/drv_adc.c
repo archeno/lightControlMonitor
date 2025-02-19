@@ -133,7 +133,7 @@ rt_uint32_t tmp_diff_result;
 // rt_uint32_t dma_value[ADC_CANNEL_NUM][SAMPLES]; //
 void cal_rms(rt_uint16_t *cur)
 {
-    rt_uint32_t sample_square[ADC_CANNEL_NUM]; // µÚÒ»ÁÐ´æ´¢Õý°ëÖÜµÄÖµ£¬µÚ¶þÁÐ¸º°ëÖÜÖµ
+    rt_uint32_t sample_square[ADC_CANNEL_NUM]; // ï¿½ï¿½Ò»ï¿½Ð´æ´¢ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½Öµï¿½ï¿½ï¿½Ú¶ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
     rt_uint32_t sample_value[ADC_CANNEL_NUM];  //
     rt_uint32_t diff_max = 0;
     rt_uint16_t cnt_p_n[ADC_CANNEL_NUM];
@@ -163,7 +163,7 @@ void cal_rms(rt_uint16_t *cur)
         temp_active_power += (sample_value[E_U_LOAD_RMS]) * (sample_value[E_I_LOAD_RMS]);
     }
 
-    // ¼ÆËãÓÐ¹¦¹¦ÂÊ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½ï¿½
     // active_power = temp_active_power / SAMPLES * 1.0f / 4095 * 3.3f * 4.28f + 7.04;
     p_adc_value[count] = temp_active_power / SAMPLES * 1.0f / 4095 * 3.3f * 4.28f + 7.04;
     for (int i = 0; i < ADC_CANNEL_NUM; i++)
@@ -290,11 +290,11 @@ static void timer_config(void)
 
     rcu_periph_clock_enable(RCU_TIMER4);
 
-    /* ÅäÖÃ PA1 Îª¸´ÓÃ¹¦ÄÜ: TIM4_CH1 */
+    /* ï¿½ï¿½ï¿½ï¿½ PA1 Îªï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½: TIM4_CH1 */
     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_1);
     gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_1);
 
-    /* ÉèÖÃ¸´ÓÃ¹¦ÄÜÎª TIM4 */
+    /* ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½Îª TIM4 */
     gpio_af_set(GPIOA, GPIO_AF_2, GPIO_PIN_1);
 
     timer_deinit(TIMER4);
